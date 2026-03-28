@@ -1,5 +1,3 @@
-scripts/build-js.mjs
-
 import { build } from 'esbuild';
 
 await build({
