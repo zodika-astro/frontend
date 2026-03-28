@@ -1,0 +1,79 @@
+// styles/integrations.css
+
+/* ============================================================================
+ * ZODIKA • Integrations Styles
+ * ----------------------------------------------------------------------------
+ * Styles for third-party integrations (e.g., Google Places autocomplete).
+ *
+ * Phase 1 goals
+ * - Isolate all external/vendor styling overrides
+ * - Prevent leakage into core UI styles
+ * - Keep behavior predictable across products
+ * ========================================================================== */
+
+/* --------------------------------------------------------------------------
+ * Google Places Autocomplete
+ * ------------------------------------------------------------------------ */
+
+/* Container dropdown */
+.pac-container {
+  z-index: 99999 !important; /* ensure above overlays/forms */
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-family-base);
+  overflow: hidden;
+}
+
+/* Individual result item */
+.pac-item {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+/* Hover / active state */
+.pac-item:hover,
+.pac-item-selected {
+  background: var(--color-surface);
+}
+
+/* Highlighted query text */
+.pac-item-query {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+/* Secondary text (region, country) */
+.pac-item span:not(.pac-item-query) {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-xs);
+}
+
+/* Powered by Google logo alignment */
+.pac-logo::after {
+  margin: var(--space-xs);
+}
+
+/* --------------------------------------------------------------------------
+ * Prevent overflow issues inside form containers
+ * ------------------------------------------------------------------------ */
+
+body > .pac-container {
+  position: absolute !important;
+}
+
+/* --------------------------------------------------------------------------
+ * iOS / Mobile adjustments
+ * ------------------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+  .pac-container {
+    font-size: var(--font-size-md);
+  }
+
+  .pac-item {
+    padding: var(--space-md);
+  }
+}
