@@ -5,18 +5,14 @@
  * ----------------------------------------------------------------------------
  * Centralized in-memory state for the universal product form app.
  *
- * Phase 1 goals
- * - Keep state structure explicit and predictable
+ * Responsibilities
+ * - Maintain UI, tracking, session, and integration state
+ * - Provide predictable and explicit state structure
  * - Avoid scattered mutable globals
- * - Support future product duplication and localization
- * - Preserve backend contract indirectly by not changing external payload keys
  * ========================================================================== */
 
 /**
- * Creates the initial runtime state for a product form instance.
- *
- * This state is intentionally front-end only.
- * It does not define or change any backend payload contract.
+ * Creates the initial runtime state for a form instance.
  *
  * @returns {object}
  */
@@ -47,10 +43,7 @@ export function createInitialFormState() {
 }
 
 /**
- * Resets the whole runtime state object in place.
- *
- * This is useful when the app wants to preserve the same object reference
- * across modules while clearing the current form session and UI state.
+ * Resets the runtime state in place while preserving the object reference.
  *
  * @param {object} state
  * @returns {object}
@@ -96,7 +89,7 @@ export function applyStoredSessionToken(state, token) {
 }
 
 /**
- * Clears the active session from state without touching unrelated UI state.
+ * Clears the active session from state.
  *
  * @param {object} state
  * @returns {object}
@@ -113,7 +106,7 @@ export function clearSessionState(state) {
 }
 
 /**
- * Clears only city-specific state.
+ * Clears city-related state.
  *
  * @param {object} state
  * @returns {object}
@@ -131,7 +124,7 @@ export function clearCityState(state) {
 }
 
 /**
- * Returns whether a valid in-memory session token currently exists.
+ * Returns whether a session token is present.
  *
  * @param {object} state
  * @returns {boolean}
@@ -141,7 +134,7 @@ export function hasActiveSessionToken(state) {
 }
 
 /**
- * Returns whether the app is currently blocked by a submit action.
+ * Returns whether a submit operation is in progress.
  *
  * @param {object} state
  * @returns {boolean}
@@ -151,7 +144,7 @@ export function isSubmitting(state) {
 }
 
 /**
- * Returns whether step tracking is currently in flight.
+ * Returns whether a step sync operation is in progress.
  *
  * @param {object} state
  * @returns {boolean}
@@ -161,7 +154,7 @@ export function isTrackingStepSyncInFlight(state) {
 }
 
 /**
- * Returns whether the selected birth place is currently validated.
+ * Returns whether the birth place is validated.
  *
  * @param {object} state
  * @returns {boolean}
