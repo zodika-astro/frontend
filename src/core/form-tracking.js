@@ -6,11 +6,11 @@
  * Session lifecycle, progress sync, draft sync, and keepalive helpers for the
  * universal product form app.
  *
- * Phase 1 goals
- * - Preserve the current backend contract
- * - Keep tracking universal across products
- * - Prepare the app for future abandonment automation
- * - Isolate tracking concerns from UI, navigation, and submit logic
+ * Responsibilities
+ * - Start and maintain tracked form sessions
+ * - Sync progress and draft updates
+ * - Handle inactive-session tracking errors
+ * - Link tracked form sessions to downstream product requests
  * ========================================================================== */
 
 import {
@@ -27,25 +27,32 @@ import {
   getStepKeyByIndex,
 } from './form-navigation.js';
 
+import {
+  getSessionToken,
+  setSessionToken,
+  clearSessionToken,
+  getPendingUpdate,
+  setPendingUpdate,
+  clearPendingUpdate,
+} from './form-storage.js';
+
 /**
- * Returns the browser storage keys for the current product.
+ * Returns a storage-key reference object for the current product.
  *
  * @param {object} config
  * @returns {{sessionToken: string, pendingUpdate: string}}
  */
 export function getTrackingStorageKeys(config) {
+  const productKey = config?.productKey || 'default';
+
   return {
-    sessionToken: `zdk_${config.productKey}_session_token`,
-    pendingUpdate: `zdk_${config.productKey}_pending_update`,
+    sessionToken: `zdk_${productKey}_session_token`,
+    pendingUpdate: `zdk_${productKey}_pending_update`,
   };
 }
 
 /**
- * Builds the absolute tracking endpoints object from config.
- *
- * Note:
- * This function assumes endpoints are already absolute or were normalized
- * earlier by the app bootstrap layer.
+ * Returns the subset of API URLs used by the tracking layer.
  *
  * @param {object} apiUrls
  * @returns {object}
@@ -66,11 +73,7 @@ export function getTrackingApiUrls(apiUrls) {
  * @returns {string|null}
  */
 export function getStoredSessionToken(storageKeys) {
-  try {
-    return sessionStorage.getItem(storageKeys.sessionToken);
-  } catch {
-    return null;
-  }
+  return getSessionToken(storageKeys);
 }
 
 /**
@@ -80,11 +83,7 @@ export function getStoredSessionToken(storageKeys) {
  * @param {string|null} token
  */
 export function storeSessionToken(storageKeys, token) {
-  try {
-    if (token) {
-      sessionStorage.setItem(storageKeys.sessionToken, token);
-    }
-  } catch {}
+  setSessionToken(storageKeys, token);
 }
 
 /**
@@ -93,9 +92,7 @@ export function storeSessionToken(storageKeys, token) {
  * @param {object} storageKeys
  */
 export function clearStoredSessionToken(storageKeys) {
-  try {
-    sessionStorage.removeItem(storageKeys.sessionToken);
-  } catch {}
+  clearSessionToken(storageKeys);
 }
 
 /**
@@ -105,13 +102,7 @@ export function clearStoredSessionToken(storageKeys) {
  * @returns {object|null}
  */
 export function getPendingUpdatePayload(storageKeys) {
-  try {
-    const raw = sessionStorage.getItem(storageKeys.pendingUpdate);
-    if (!raw) return null;
-    return JSON.parse(raw);
-  } catch {
-    return null;
-  }
+  return getPendingUpdate(storageKeys);
 }
 
 /**
@@ -121,10 +112,7 @@ export function getPendingUpdatePayload(storageKeys) {
  * @param {object|null} payload
  */
 export function storePendingUpdatePayload(storageKeys, payload) {
-  try {
-    if (!payload) return;
-    sessionStorage.setItem(storageKeys.pendingUpdate, JSON.stringify(payload));
-  } catch {}
+  setPendingUpdate(storageKeys, payload);
 }
 
 /**
@@ -133,16 +121,11 @@ export function storePendingUpdatePayload(storageKeys, payload) {
  * @param {object} storageKeys
  */
 export function clearPendingUpdatePayload(storageKeys) {
-  try {
-    sessionStorage.removeItem(storageKeys.pendingUpdate);
-  } catch {}
+  clearPendingUpdate(storageKeys);
 }
 
 /**
  * Builds the current form payload snapshot using the current form values.
- *
- * Important:
- * This preserves the current backend-facing keys.
  *
  * @param {HTMLFormElement} form
  * @param {object} state
@@ -174,10 +157,7 @@ export function getCurrentFormPayload(form, state) {
 }
 
 /**
- * Builds the payload used to start a form session.
- *
- * Important:
- * This preserves the current backend-facing contract.
+ * Builds the payload used to start a tracked form session.
  *
  * @param {HTMLFormElement} form
  * @param {object} config
@@ -204,10 +184,27 @@ export function buildStartSessionPayload(form, config) {
 }
 
 /**
- * Builds a standard in-progress payload for a step transition or draft sync.
+ * Builds a stable step snapshot for progress updates.
  *
- * Important:
- * This preserves the current backend-facing contract.
+ * @param {number} currentStepIndex
+ * @param {number} lastCompletedStepIndex
+ * @param {number} [highestCompletedStepIndex]
+ * @returns {{currentStepIndex:number,lastCompletedStepIndex:number,highestCompletedStepIndex:number}}
+ */
+export function createProgressSnapshot(
+  currentStepIndex,
+  lastCompletedStepIndex,
+  highestCompletedStepIndex = Math.max(currentStepIndex, lastCompletedStepIndex)
+) {
+  return {
+    currentStepIndex,
+    lastCompletedStepIndex,
+    highestCompletedStepIndex,
+  };
+}
+
+/**
+ * Builds the standard progress payload used for step transitions and draft sync.
  *
  * @param {object} params
  * @param {object} params.state
@@ -240,10 +237,7 @@ export function buildProgressPayload({
 }
 
 /**
- * Builds the payload used when the form session reaches the submit stage.
- *
- * Important:
- * This preserves the current backend-facing contract.
+ * Builds the payload used when the tracked form session reaches submit.
  *
  * @param {object} state
  * @param {object} config
@@ -297,15 +291,13 @@ export async function startFormSession({
   }
 
   state.session.token = token;
-  state.session.isStarted = true;
-  storeSessionToken(storageKeys, token);
+  setSessionToken(storageKeys, token);
 
   return true;
 }
 
 /**
- * Sends a progress update and persists it as the latest pending payload until
- * the request succeeds.
+ * Sends a progress update and keeps the last payload persisted until sync succeeds.
  *
  * @param {object} params
  * @param {object} params.state
@@ -328,18 +320,21 @@ export async function updateFormSessionProgress({
 }) {
   if (!state?.session?.token) return;
 
-  const highestCompletedStepIndex = Math.max(previousStepIndex, targetStepIndex);
+  const snapshot = createProgressSnapshot(
+    targetStepIndex,
+    previousStepIndex
+  );
 
   const payload = buildProgressPayload({
     state,
     config,
     form,
-    currentStepIndex: targetStepIndex,
-    lastCompletedStepIndex: previousStepIndex,
-    highestCompletedStepIndex,
+    currentStepIndex: snapshot.currentStepIndex,
+    lastCompletedStepIndex: snapshot.lastCompletedStepIndex,
+    highestCompletedStepIndex: snapshot.highestCompletedStepIndex,
   });
 
-  storePendingUpdatePayload(storageKeys, payload);
+  setPendingUpdate(storageKeys, payload);
 
   await postJson(
     apiUrls.formUpdate,
@@ -347,18 +342,21 @@ export async function updateFormSessionProgress({
     config.timeouts.formUpdate
   );
 
-  clearPendingUpdatePayload(storageKeys);
+  clearPendingUpdate(storageKeys);
 }
 
 /**
  * Attempts to resend the last pending update from storage.
+ *
+ * Returns a structured result so callers can keep the UI responsive while still
+ * understanding what happened during the retry.
  *
  * @param {object} params
  * @param {object} params.config
  * @param {object} params.apiUrls
  * @param {object} params.storageKeys
  * @param {Function} params.onTrackingError
- * @returns {Promise<{ok: boolean, flushed: boolean, handled?: boolean}>}
+ * @returns {Promise<{ok:boolean,flushed:boolean,handled:boolean,reason:string|null}>}
  */
 export async function flushPendingUpdate({
   config,
@@ -366,9 +364,15 @@ export async function flushPendingUpdate({
   storageKeys,
   onTrackingError,
 }) {
-  const pendingPayload = getPendingUpdatePayload(storageKeys);
+  const pendingPayload = getPendingUpdate(storageKeys);
+
   if (!pendingPayload) {
-    return { ok: true, flushed: false };
+    return {
+      ok: true,
+      flushed: false,
+      handled: false,
+      reason: null,
+    };
   }
 
   try {
@@ -378,16 +382,26 @@ export async function flushPendingUpdate({
       config.timeouts.formUpdate
     );
 
-    clearPendingUpdatePayload(storageKeys);
+    clearPendingUpdate(storageKeys);
 
-    return { ok: true, flushed: true };
+    return {
+      ok: true,
+      flushed: true,
+      handled: false,
+      reason: null,
+    };
   } catch (error) {
     const handled =
       typeof onTrackingError === 'function'
         ? await onTrackingError(error)
         : false;
 
-    return { ok: false, flushed: false, handled };
+    return {
+      ok: false,
+      flushed: false,
+      handled,
+      reason: handled ? 'handled_error' : 'network_or_unknown_error',
+    };
   }
 }
 
@@ -402,7 +416,7 @@ export function flushPendingUpdateWithKeepalive({
   apiUrls,
   storageKeys,
 }) {
-  const pendingPayload = getPendingUpdatePayload(storageKeys);
+  const pendingPayload = getPendingUpdate(storageKeys);
   if (!pendingPayload) return;
 
   try {
@@ -419,7 +433,7 @@ export function flushPendingUpdateWithKeepalive({
 }
 
 /**
- * Marks the tracked form session as submitted in the universal forms backend.
+ * Marks the tracked form session as submitted.
  *
  * @param {object} params
  * @param {object} params.state
@@ -448,7 +462,7 @@ export async function markFormSessionSubmitted({
 }
 
 /**
- * Links the tracked form session to a request created later in the product flow.
+ * Links the tracked form session to a downstream request.
  *
  * @param {object} params
  * @param {object} params.state
@@ -471,8 +485,6 @@ export async function linkFormSessionToRequest({
 
 /**
  * Handles tracking-specific backend errors.
- *
- * For Phase 1, only inactive-session handling is standardized here.
  *
  * @param {object} params
  * @param {Error} params.error
@@ -497,8 +509,8 @@ export async function handleTrackingError({
     isSessionInactiveErrorPayload(payload, config.tracking.sessionInactiveCode)
   ) {
     clearSessionState(state);
-    clearStoredSessionToken(storageKeys);
-    clearPendingUpdatePayload(storageKeys);
+    clearSessionToken(storageKeys);
+    clearPendingUpdate(storageKeys);
 
     if (typeof onSessionInactive === 'function') {
       await onSessionInactive();
@@ -512,10 +524,6 @@ export async function handleTrackingError({
 
 /**
  * Creates a debounced draft sync function for partial-progress tracking.
- *
- * This is part of the abandonment-ready foundation, but still preserves the
- * current backend contract by using the same universal /forms/update endpoint
- * and payload shape.
  *
  * @param {object} params
  * @param {object} params.state
@@ -540,21 +548,23 @@ export function createDraftSyncScheduler({
     clearTimeout(state.tracking.draftSyncTimer);
 
     state.tracking.draftSyncTimer = setTimeout(async () => {
-      const currentStepIndex = state.ui.currentStepIndex;
-      const lastCompletedStepIndex = Math.max(0, currentStepIndex - 1);
-      const highestCompletedStepIndex = currentStepIndex;
+      const snapshot = createProgressSnapshot(
+        state.ui.currentStepIndex,
+        Math.max(0, state.ui.currentStepIndex - 1),
+        state.ui.currentStepIndex
+      );
 
       const payload = buildProgressPayload({
         state,
         config,
         form,
-        currentStepIndex,
-        lastCompletedStepIndex,
-        highestCompletedStepIndex,
+        currentStepIndex: snapshot.currentStepIndex,
+        lastCompletedStepIndex: snapshot.lastCompletedStepIndex,
+        highestCompletedStepIndex: snapshot.highestCompletedStepIndex,
       });
 
       try {
-        storePendingUpdatePayload(storageKeys, payload);
+        setPendingUpdate(storageKeys, payload);
 
         await postJson(
           apiUrls.formUpdate,
@@ -562,7 +572,7 @@ export function createDraftSyncScheduler({
           config.timeouts.formUpdate
         );
 
-        clearPendingUpdatePayload(storageKeys);
+        clearPendingUpdate(storageKeys);
       } catch (error) {
         console.error('[ZDK] Draft sync error:', error);
 
@@ -575,7 +585,7 @@ export function createDraftSyncScheduler({
 }
 
 /**
- * Binds input/change/blur listeners for tracked draft progress.
+ * Binds input, change, and blur listeners for tracked draft progress.
  *
  * @param {object} params
  * @param {HTMLFormElement} params.form
