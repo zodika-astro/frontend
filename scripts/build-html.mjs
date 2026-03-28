@@ -1,5 +1,3 @@
-// scripts/build-html.mjs
-
 import fs from 'fs';
 import path from 'path';
 
