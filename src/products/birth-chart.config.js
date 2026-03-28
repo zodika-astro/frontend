@@ -29,9 +29,9 @@ export const birthChartConfig = {
   },
 
   selectors: {
-    appRoot: '.natal-app',
+    appRoot: '.form-app',
     form: '#natalForm',
-    steps: '.natal-step',
+    steps: '.form-step',
     progressSteps: '.progress-step',
     spinnerOverlay: '#spinner',
     errorOverlay: '#errorMessage',
