@@ -1,33 +1,23 @@
-// products/birth-chart.config.js
+// src/products/birth-chart.config.js
 
 /* ============================================================================
- * ZODIKA • Birth Chart Product Config
+ * ZODIKA • Birth Chart Config
  * ----------------------------------------------------------------------------
  * Product-specific configuration for the Birth Chart form.
  *
- * Phase 1 goals
- * - Keep ALL product differences here (not in core logic)
- * - Preserve backend contract (DO NOT rename payload keys or endpoints)
- * - Enable easy duplication for new products (e.g. solar return)
+ * Responsibilities
+ * - Define product-specific settings outside core logic
+ * - Centralize selectors, field mappings, endpoints, and timing values
+ * - Keep product behavior configurable and reusable
  * ========================================================================== */
 
 /**
- * Birth Chart form configuration
- *
- * NOTE:
- * - Endpoints and payload-related keys MUST match current backend contract
- * - Selectors still reflect current Webflow HTML (Phase 1 compatibility)
+ * Birth Chart form configuration.
  */
 export const birthChartConfig = {
-  /* ------------------------------------------------------------------------
-   * Identity
-   * ---------------------------------------------------------------------- */
   productKey: 'birth_chart',
   locale: 'pt-BR',
 
-  /* ------------------------------------------------------------------------
-   * Backend (DO NOT CHANGE in Phase 1)
-   * ---------------------------------------------------------------------- */
   apiBaseUrl: 'https://backend-form-webflow-production.up.railway.app',
 
   endpoints: {
@@ -38,9 +28,6 @@ export const birthChartConfig = {
     checkoutSubmit: '/birthchart/birthchartsubmit-form',
   },
 
-  /* ------------------------------------------------------------------------
-   * Selectors (current Webflow structure)
-   * ---------------------------------------------------------------------- */
   selectors: {
     appRoot: '.natal-app',
     form: '#natalForm',
@@ -53,9 +40,6 @@ export const birthChartConfig = {
     confirmationSummary: '#confirmation-summary',
   },
 
-  /* ------------------------------------------------------------------------
-   * Field mapping (DO NOT CHANGE names — backend contract)
-   * ---------------------------------------------------------------------- */
   fields: {
     email: 'email',
     fullName: 'name',
@@ -65,7 +49,6 @@ export const birthChartConfig = {
     privacyAgreed: 'privacy_agreed',
   },
 
-  /* Hidden fields populated by Google Places */
   hiddenFields: {
     placeId: 'birth_place_place_id',
     fullAddress: 'birth_place_full',
@@ -77,9 +60,6 @@ export const birthChartConfig = {
     json: 'birth_place_json',
   },
 
-  /* ------------------------------------------------------------------------
-   * Error element IDs (UI only)
-   * ---------------------------------------------------------------------- */
   errorIds: {
     email: 'emailError',
     name: 'nameError',
@@ -89,9 +69,6 @@ export const birthChartConfig = {
     privacy: 'privacyError',
   },
 
-  /* ------------------------------------------------------------------------
-   * Steps
-   * ---------------------------------------------------------------------- */
   stepKeys: [
     'email',
     'name',
@@ -101,18 +78,12 @@ export const birthChartConfig = {
     'confirmation',
   ],
 
-  /* ------------------------------------------------------------------------
-   * Tracking (UNIVERSAL BACKEND CONTRACT)
-   * ---------------------------------------------------------------------- */
   tracking: {
-    formType: 'birth_chart', // sent to backend (DO NOT CHANGE now)
+    formType: 'birth_chart',
     sessionInactiveCode: 'SESSION_NOT_ACTIVE',
     debounceMs: 900,
   },
 
-  /* ------------------------------------------------------------------------
-   * Timeouts
-   * ---------------------------------------------------------------------- */
   timeouts: {
     formStart: 8000,
     formUpdate: 5000,
@@ -120,9 +91,6 @@ export const birthChartConfig = {
     checkoutSubmit: 20000,
   },
 
-  /* ------------------------------------------------------------------------
-   * Confirmation summary mapping
-   * ---------------------------------------------------------------------- */
   confirmationFields: [
     { key: 'email', labelKey: 'confirmation.email' },
     { key: 'name', labelKey: 'confirmation.name' },
@@ -131,9 +99,6 @@ export const birthChartConfig = {
     { key: 'birth_place', labelKey: 'confirmation.birthPlace' },
   ],
 
-  /* ------------------------------------------------------------------------
-   * Integrations
-   * ---------------------------------------------------------------------- */
   integrations: {
     usesGooglePlaces: true,
   },
