@@ -1,48 +1,17 @@
-// bundles/birth-chart.bundle.css
+/* src/bundles/birth-chart.bundle.css */
 
 /* ============================================================================
- * ZODIKA • Birth Chart Bundle CSS
+ * ZODIKA • Birth Chart Bundle Styles
  * ----------------------------------------------------------------------------
- * Entry point for all styles used in the Birth Chart form.
+ * Entry point for all styles used by the Birth Chart form.
  *
- * Responsibilities:
- * - Import all style layers in the correct order
- * - Ensure predictable cascade and override behavior
- *
- * Order matters:
- * 1. Base (tokens + reset)
- * 2. Form (layout + structure)
- * 3. Components (reusable UI)
- * 4. Overlays (modals, spinner)
- * 5. Integrations (external overrides like Google Places)
+ * Responsibilities
+ * - Load style layers in a predictable order
+ * - Preserve cascade consistency across the form UI
  * ========================================================================== */
 
-/* --------------------------------------------------------------------------
- * Base (foundation)
- * ------------------------------------------------------------------------ */
-
 @import '../styles/base.css';
-
-/* --------------------------------------------------------------------------
- * Form (core layout)
- * ------------------------------------------------------------------------ */
-
 @import '../styles/form.css';
-
-/* --------------------------------------------------------------------------
- * Components (reusable blocks)
- * ------------------------------------------------------------------------ */
-
 @import '../styles/components.css';
-
-/* --------------------------------------------------------------------------
- * Overlays (modals, spinner, errors)
- * ------------------------------------------------------------------------ */
-
 @import '../styles/overlays.css';
-
-/* --------------------------------------------------------------------------
- * Integrations (Google Places, etc.)
- * ------------------------------------------------------------------------ */
-
 @import '../styles/integrations.css';
