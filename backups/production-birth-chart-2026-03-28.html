@@ -1,0 +1,323 @@
+// backups/production-birth-chart-2026-03-28.html
+
+<!-- ZODIKA • Natal Chart Form (Version D - reordered and simplified) -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:FILL@0..1" />
+
+<div class="natal-app">
+  <!-- Header -->
+  <header class="form-header" aria-label="zodika">
+    <div class="form-logo">zodika</div>
+    <div class="form-subtitle">mapa natal</div>
+  </header>
+
+  <main class="natal-shell">
+    <div class="natal-form-container">
+      <!-- Form -->
+      <form class="natal-form" id="natalForm" novalidate>
+        <!-- Progress Bar (6 steps: 0..5) -->
+        <div class="progress-container" aria-hidden="true">
+          <div class="progress-bar">
+            <div class="progress-indicator">
+              <div class="progress-step active"></div>
+              <div class="progress-step"></div>
+              <div class="progress-step"></div>
+              <div class="progress-step"></div>
+              <div class="progress-step"></div>
+              <div class="progress-step"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- =========================
+             STEP 0 — Email
+             ========================= -->
+        <div class="natal-step active" data-step="0" role="group" aria-labelledby="step-0-title">
+          <div class="step-head">
+            <h2 class="step-title" id="step-0-title"><span class="step-count">1.</span> informe seu e-mail</h2>
+            <div class="meta-row">
+              <span class="natal-note">usaremos este e-mail para enviar seu mapa e salvar seu progresso.</span>
+            </div>
+          </div>
+
+          <div class="input-container">
+            <input type="email" name="email" class="natal-input" required aria-label="e-mail" placeholder="Ex: ana@exemplo.com" autocomplete="email" />
+            <span class="error" id="emailError" style="display:none;">
+              <span id="emailErrorText">por favor, insira um e-mail válido.</span>
+            </span>
+          </div>
+
+          <div class="btn-group">
+            <button type="button" class="natal-btn next" onclick="nextStep()">
+              próximo <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- =========================
+             STEP 1 — Full Name
+             ========================= -->
+        <div class="natal-step" data-step="1" role="group" aria-labelledby="step-1-title">
+          <div class="step-head">
+            <h2 class="step-title" id="step-1-title"><span class="step-count">2.</span> informe seu nome completo</h2>
+            <div class="meta-row">
+              <span class="natal-note placeholder" aria-hidden="true">&nbsp;</span>
+            </div>
+          </div>
+
+          <div class="input-container">
+            <input type="text" name="name" class="natal-input" required aria-label="nome completo" placeholder="Ex: Ana Ferreira dos Santos" autocomplete="name" />
+            <span class="error" id="nameError" style="display:none;">
+              <span id="nameErrorText">este campo é obrigatório.</span>
+            </span>
+          </div>
+
+          <div class="btn-group">
+            <button type="button" class="natal-btn back" onclick="prevStep()">
+              <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span> voltar
+            </button>
+            <button type="button" class="natal-btn next" onclick="nextStep()">
+              próximo <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- =========================
+             STEP 2 — Birth Date
+             ========================= -->
+        <div class="natal-step" data-step="2" role="group" aria-labelledby="step-2-title">
+          <div class="step-head">
+            <h2 class="step-title" id="step-2-title"><span class="step-count">3.</span> informe sua data de nascimento</h2>
+            <div class="meta-row">
+              <span class="natal-note placeholder" aria-hidden="true">&nbsp;</span>
+            </div>
+          </div>
+
+          <div class="input-container">
+            <input type="date" name="birth_date" class="natal-input" required aria-label="data de nascimento" />
+            <span class="error" id="dateError" style="display:none;">
+              <span id="dateErrorText">por favor, insira uma data válida.</span>
+            </span>
+          </div>
+
+          <div class="btn-group">
+            <button type="button" class="natal-btn back" onclick="prevStep()">
+              <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span> voltar
+            </button>
+            <button type="button" class="natal-btn next" onclick="nextStep()">
+              próximo <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- =========================
+             STEP 3 — Birth Time
+             ========================= -->
+        <div class="natal-step" data-step="3" role="group" aria-labelledby="step-3-title">
+          <div class="step-head">
+            <h2 class="step-title" id="step-3-title"><span class="step-count">4.</span> informe sua hora de nascimento</h2>
+            <div class="meta-row">
+              <span class="natal-note placeholder" aria-hidden="true">&nbsp;</span>
+            </div>
+          </div>
+
+          <div class="input-container">
+            <input type="time" name="birth_time" class="natal-input natal-time" required aria-label="hora de nascimento" />
+            <!-- Decorative icon intentionally removed to avoid overlap with the native time picker -->
+          </div>
+
+          <div class="btn-group">
+            <button type="button" class="natal-btn back" onclick="prevStep()">
+              <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span> voltar
+            </button>
+            <button type="button" class="natal-btn next" onclick="nextStep()">
+              próximo <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- =========================
+             STEP 4 — Birth City
+             ========================= -->
+        <div class="natal-step" data-step="4" role="group" aria-labelledby="step-4-title">
+          <div class="step-head">
+            <h2 class="step-title" id="step-4-title"><span class="step-count">5.</span> selecione sua cidade de nascimento</h2>
+            <div class="meta-row">
+              <span class="natal-note">digite e escolha uma cidade da lista.</span>
+            </div>
+          </div>
+
+          <div class="input-container">
+            <input type="text" name="birth_place" id="cityInput" class="natal-input" required aria-label="cidade de nascimento" placeholder="Ex: Belo Horizonte, MG" aria-describedby="cityError" />
+            <span class="error" id="cityError" style="display:none;">
+              <span id="cityErrorText">por favor, selecione uma cidade válida da lista.</span>
+            </span>
+          </div>
+
+          <!-- Hidden fields required by backend -->
+          <input type="hidden" name="birth_place_place_id" id="birth_place_place_id" />
+          <input type="hidden" name="birth_place_full" id="birth_place_full" />
+          <input type="hidden" name="birth_place_country" id="birth_place_country" />
+          <input type="hidden" name="birth_place_admin1" id="birth_place_admin1" />
+          <input type="hidden" name="birth_place_admin2" id="birth_place_admin2" />
+          <input type="hidden" name="birth_place_lat" id="birth_place_lat" />
+          <input type="hidden" name="birth_place_lng" id="birth_place_lng" />
+          <input type="hidden" name="birth_place_json" id="birth_place_json" />
+
+          <div class="btn-group">
+            <button type="button" class="natal-btn back" onclick="prevStep()">
+              <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span> voltar
+            </button>
+            <button type="button" class="natal-btn next" onclick="nextStep()">
+              próximo <span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- =========================
+             STEP 5 — Review & Payment
+             ========================= -->
+        <div class="natal-step" data-step="5" role="group" aria-labelledby="step-5-title">
+          <div class="step-head">
+            <h2 class="step-title" id="step-5-title">
+              <span class="step-count">6.</span> confirmação & pagamento
+            </h2>
+            <div class="meta-row">
+              <span class="natal-note">
+                revise seus dados. ao confirmar, você será direcionada(o) para a página de pagamento.
+              </span>
+            </div>
+          </div>
+
+          <!-- Confirmation summary -->
+          <div id="confirmation-summary" class="confirmation-summary" aria-live="polite" aria-atomic="true"></div>
+
+          <!-- Product card -->
+          <section class="zdk-product zdk-product--img-left" aria-label="o que você vai receber">
+            <div class="zdk-product__media" aria-hidden="true">
+              <img
+                src="https://cdn.prod.website-files.com/6889fe9691aef1b57440da10/68cd82a6687b9b48c0f128f5_Product-image%20(1).png"
+                alt=""
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+
+            <div class="zdk-product__body">
+              <h3 class="zdk-product__title">seu mapa natal zodika (e-book)</h3>
+              <ul class="zdk-product__list">
+                <li><strong>desenho do mapa natal</strong> com roda zodiacal completa.</li>
+                <li><strong>tabela técnica</strong> com posições de planetas, signos, casas e aspectos principais.</li>
+                <li><strong>interpretação personalizada</strong> dos planetas em signos e casas.</li>
+                <li><strong>leitura de aspectos</strong> (harmônicos e desafiadores) com linguagem clara.</li>
+                <li><strong>forças de elemento e modalidade</strong> (fogo/terra/ar/água; cardinal/fixo/mutável).</li>
+                <li><strong>insights práticos</strong> de personalidade, talentos, desafios e direção de vida.</li>
+              </ul>
+            </div>
+          </section>
+
+          <!-- Meta card -->
+          <section class="zdk-meta-card" aria-label="detalhes de pagamento e suporte">
+            <ul class="zdk-meta-list" role="list">
+              <li>
+                <span class="zdk-meta-label">valor</span>
+                <span class="zdk-meta-value">R$ 35,00</span>
+              </li>
+              <li>
+                <span class="zdk-meta-label">entrega</span>
+                <span class="zdk-meta-value">em alguns minutos por e-mail após a confirmação do pagamento</span>
+              </li>
+              <li class="zdk-meta-support">
+                <span class="zdk-meta-label">suporte</span>
+                <span class="zdk-meta-value">
+                  <a href="mailto:contato@zodika.com.br">info@zodika.com.br</a>
+                </span>
+              </li>
+            </ul>
+
+            <div class="zdk-meta-social" aria-label="redes sociais">
+              <a href="https://instagram.com/zodika__" target="_blank" rel="noopener" class="zdk-social" aria-label="instagram @zodika">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7zm5 3.5A5.5 5.5 0 1 1 6.5 13 5.5 5.5 0 0 1 12 7.5zm0 2A3.5 3.5 0 1 0 15.5 13 3.5 3.5 0 0 0 12 9.5zM18 6.2a1.2 1.2 0 1 1-1.2 1.2A1.2 1.2 0 0 1 18 6.2z"/></svg>
+              </a>
+              <a href="https://facebook.com/zodikaastro" target="_blank" rel="noopener" class="zdk-social" aria-label="facebook @zodika">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M13 22v-8h3l.5-3H13V9.5c0-.9.3-1.5 1.7-1.5H17V5.2c-.3 0-1.4-.2-2.7-.2-2.7 0-4.3 1.4-4.3 4V11H7v3h3v8z"/></svg>
+              </a>
+              <a href="https://www.tiktok.com/@zodikaastro" target="_blank" rel="noopener" class="zdk-social" aria-label="tiktok @zodika">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M12 2h3.2c.1 1.6 1 3.1 2.3 4 1 .7 2.1 1 3.3 1.1v3.3c-1.8 0-3.6-.6-5.1-1.6v6.9A6.8 6.8 0 1 1 8 9.1c.5 0 1 .1 1.4.2v3.5c-.5-.2-1-.3-1.4-.3a3.3 3.3 0 1 0 3.3 3.3V2z"/></svg>
+              </a>
+              <a href="https://wa.me/32469149742" target="_blank" rel="noopener noreferrer" class="zdk-social" title="whatsapp" aria-label="whatsapp">
+                <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path fill="currentColor" d="M20.5 3.5A10.5 10.5 0 0 0 3.7 17.9L3 21l3.2-.7a10.5 10.5 0 0 0 14.3-16.8zM12 20a8 8 0 0 1-4.1-1.1l-.3-.2-2.4.5.5-2.3-.2-.3a8 8 0 1 1 6.5 3.4zm4.6-5.8c-.2-.1-1.3-.6-1.4-.7s-.3-.1-.5.1-.5.7-.7.8-.3.2-.5.1a6.6 6.6 0 0 1-3-2.6c-.2-.3 0-.4.1-.5s.2-.2.3-.4a1.6 1.6 0 0 0 .2-.4.5.5 0 0 0 0-.4c0-.1-.5-1.2-.7-1.6s-.4-.4-.5-.4h-.4a.8.8 0 0 0-.6.3 2.5 2.5 0 0 0-.8 1.9 4.3 4.3 0 0 0 .9 2.2 9.8 9.8 0 0 0 3.8 3.5 4.4 4.4 0 0 0 2.7.8 2.4 2.4 0 0 0 1.6-.8 2 2 0 0 0 .4-1.1c0-.1 0-.2-.1-.3z"/></svg>
+              </a>
+            </div>
+          </section>
+
+          <!-- Privacy policy consent -->
+          <div class="input-container" style="margin-top:16px;">
+            <label style="display:flex; align-items:flex-start; gap:8px; cursor:pointer;">
+              <input type="checkbox" id="privacyCheck" name="privacy_agreed" aria-label="Concordo com a Política de Privacidade" />
+              <span style="line-height:1.4;">
+                eu li e concordo com a
+                <a href="https://www.zodika.com.br/privacy-policy" target="_blank" rel="noopener">política de privacidade</a>.
+              </span>
+            </label>
+            <span class="error" id="privacyError" style="display:none; margin-top:8px;">
+              <span id="privacyErrorText">você precisa concordar com a política de privacidade para continuar.</span>
+            </span>
+          </div>
+
+          <div class="btn-group">
+            <button type="button" class="natal-btn back" onclick="prevStep()">
+              <span class="material-symbols-rounded" aria-hidden="true">arrow_back</span> voltar
+            </button>
+
+            <button type="submit" class="natal-btn next" id="btn-confirmar">
+              <img
+                class="zdk-psp-icon"
+                src="https://cdn.prod.website-files.com/6889fe9691aef1b57440da10/68cd7dd7fc94cbf6f6029a7f_MP_RGB_HANDSHAKE_pluma_horizontal.png"
+                alt=""
+                aria-hidden="true"
+                loading="lazy"
+                decoding="async"
+              />
+              confirmar e pagar
+              <span class="material-symbols-rounded" aria-hidden="true">check_circle</span>
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Overlay: Loading -->
+      <div class="loading-spinner" id="spinner" role="dialog" aria-modal="true" aria-live="polite" aria-label="processando pagamento">
+        <div class="spinner-circle"></div>
+        <div class="spinner-content">
+          <h2>oie, obrigada pelas informações</h2>
+          <p>agora você será direcionado para a página de pagamento.</p>
+        </div>
+      </div>
+
+      <!-- Overlay: Error -->
+      <div class="error-message" id="errorMessage" role="alert">
+        <div class="error-icon">
+          <span class="material-symbols-rounded" aria-hidden="true">error</span>
+        </div>
+        <h2>ops... algo deu errado.</h2>
+        <p>você quer tentar novamente? clique no botão abaixo ou envie um e-mail para: info@zodika.com.br</p>
+        <div class="btn-group">
+          <button type="button" class="natal-btn next" onclick="resetForm()">
+            <span class="material-symbols-rounded" aria-hidden="true">refresh</span> tentar novamente
+          </button>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Google Maps JS API (Places only) -->
+<script
+  defer
+  src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAC0DDDTO5D52LscJmIui2V2K6FJcFjPII&libraries=places&v=weekly"
+  onload="window.initAutocomplete && window.initAutocomplete()">
+</script>
