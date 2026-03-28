@@ -1,15 +1,12 @@
-// styles/base.css
-
 /* ============================================================================
  * ZODIKA • Base Styles
  * ----------------------------------------------------------------------------
- * Global reset, design tokens, typography and foundational layout rules.
+ * Global reset, design tokens, typography, and foundational layout rules.
  *
- * Phase 1 goals
- * - Centralize design tokens (colors, spacing, radius, etc.)
+ * Responsibilities
+ * - Define design tokens
  * - Normalize browser defaults
- * - Provide a consistent base for all product forms
- * - Keep styling scalable and reusable across products
+ * - Provide shared base styles across product forms
  * ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -24,13 +21,12 @@
   --color-surface: #fafafa;
   --color-text: #1a1a1a;
   --color-text-muted: #6b6b6b;
-
   --color-border: #e5e5e5;
   --color-error: #d32f2f;
   --color-success: #2e7d32;
 
   /* Typography */
-  --font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-family-base: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 
   --font-size-xs: 12px;
   --font-size-sm: 14px;
@@ -61,7 +57,7 @@
   /* Layout */
   --max-width: 720px;
 
-  /* Input */
+  /* Controls */
   --input-height: 52px;
 }
 
@@ -89,7 +85,6 @@ body {
   line-height: 1.5;
 }
 
-/* Remove default margins */
 h1,
 h2,
 h3,
@@ -101,35 +96,38 @@ ol {
   padding: 0;
 }
 
-/* Lists */
 ul,
 ol {
   list-style: none;
 }
 
-/* Images */
-img {
-  max-width: 100%;
+img,
+svg {
   display: block;
+  max-width: 100%;
 }
 
-/* Buttons */
 button {
-  font-family: inherit;
+  font: inherit;
   cursor: pointer;
-  border: none;
+  border: 0;
   background: none;
+  color: inherit;
 }
 
-/* Inputs */
 input,
 select,
 textarea {
-  font-family: inherit;
-  font-size: 16px; /* Prevent iOS zoom */
-  border: none;
+  font: inherit;
+  font-size: 16px;
+  color: inherit;
+  border: 0;
   outline: none;
   background: none;
+}
+
+a {
+  color: inherit;
 }
 
 /* --------------------------------------------------------------------------
@@ -151,25 +149,36 @@ textarea {
 .container {
   width: 100%;
   max-width: var(--max-width);
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: var(--space-md);
-  padding-right: var(--space-md);
+  margin-inline: auto;
+  padding-inline: var(--space-md);
 }
 
 /* --------------------------------------------------------------------------
  * Accessibility
  * ------------------------------------------------------------------------ */
 
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  white-space: nowrap;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+}
+
 :focus-visible {
   outline: 2px solid var(--color-primary);
   outline-offset: 2px;
 }
 
-/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation: none !important;
     transition: none !important;
+    scroll-behavior: auto !important;
   }
 }
