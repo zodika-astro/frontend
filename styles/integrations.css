@@ -1,72 +1,59 @@
-// styles/integrations.css
+/* src/styles/integrations.css */
 
 /* ============================================================================
- * ZODIKA • Integrations Styles
+ * ZODIKA • Integration Styles
  * ----------------------------------------------------------------------------
- * Styles for third-party integrations (e.g., Google Places autocomplete).
+ * Styles for third-party integrations.
  *
- * Phase 1 goals
- * - Isolate all external/vendor styling overrides
- * - Prevent leakage into core UI styles
- * - Keep behavior predictable across products
+ * Responsibilities
+ * - Isolate vendor-specific overrides
+ * - Keep external UI aligned with the product design system
+ * - Prevent leakage into core form styles
  * ========================================================================== */
 
 /* --------------------------------------------------------------------------
  * Google Places Autocomplete
  * ------------------------------------------------------------------------ */
 
-/* Container dropdown */
 .pac-container {
-  z-index: 99999 !important; /* ensure above overlays/forms */
-  border-radius: var(--radius-md);
+  z-index: 99999 !important;
+  overflow: hidden;
   border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
   box-shadow: var(--shadow-md);
   font-family: var(--font-family-base);
-  overflow: hidden;
 }
 
-/* Individual result item */
 .pac-item {
   padding: var(--space-sm) var(--space-md);
   font-size: var(--font-size-sm);
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: background-color 0.15s ease;
 }
 
-/* Hover / active state */
 .pac-item:hover,
 .pac-item-selected {
   background: var(--color-surface);
 }
 
-/* Highlighted query text */
 .pac-item-query {
   font-weight: var(--font-weight-medium);
   color: var(--color-text);
 }
 
-/* Secondary text (region, country) */
 .pac-item span:not(.pac-item-query) {
-  color: var(--color-text-muted);
   font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
 }
 
-/* Powered by Google logo alignment */
 .pac-logo::after {
   margin: var(--space-xs);
 }
 
-/* --------------------------------------------------------------------------
- * Prevent overflow issues inside form containers
- * ------------------------------------------------------------------------ */
-
 body > .pac-container {
   position: absolute !important;
 }
-
-/* --------------------------------------------------------------------------
- * iOS / Mobile adjustments
- * ------------------------------------------------------------------------ */
 
 @media (max-width: 768px) {
   .pac-container {
