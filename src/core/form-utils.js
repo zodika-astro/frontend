@@ -5,11 +5,10 @@
  * ----------------------------------------------------------------------------
  * Shared utility helpers for the universal product form app.
  *
- * Phase 1 goals
- * - Centralize pure helpers
- * - Keep business logic out of generic utilities
- * - Support future modularization and product duplication
- * - Preserve backend contract indirectly by avoiding external payload changes
+ * Responsibilities
+ * - Provide pure helper functions
+ * - Avoid coupling with business logic or UI
+ * - Support reuse across modules and products
  * ========================================================================== */
 
 /**
@@ -24,7 +23,6 @@ export function isPlainObject(value) {
 
 /**
  * Safely clones serializable data.
- * Falls back to JSON cloning when structuredClone is unavailable.
  *
  * @template T
  * @param {T} value
@@ -40,7 +38,7 @@ export function structuredCloneSafe(value) {
 
 /**
  * Deep-merges two objects.
- * Arrays and non-plain objects are replaced, not merged recursively.
+ * Arrays and non-plain objects are replaced, not merged.
  *
  * @param {object} base
  * @param {object} override
@@ -69,7 +67,6 @@ export function deepMerge(base, override) {
 
 /**
  * Converts a relative endpoint path into an absolute URL.
- * If the path is already absolute, it is returned unchanged.
  *
  * @param {string} base
  * @param {string} path
@@ -92,16 +89,12 @@ export function toAbsoluteUrl(base, path) {
  * @returns {*}
  */
 export function getNestedValue(obj, path, fallback = undefined) {
-  if (!obj || !path) {
-    return fallback;
-  }
+  if (!obj || !path) return fallback;
 
   const value = String(path)
     .split('.')
-    .reduce((accumulator, key) => {
-      if (accumulator && key in accumulator) {
-        return accumulator[key];
-      }
+    .reduce((acc, key) => {
+      if (acc && key in acc) return acc[key];
       return undefined;
     }, obj);
 
@@ -145,7 +138,7 @@ export function formatDisplayDate(isoDate, locale = 'pt-BR', fallback = '') {
 }
 
 /**
- * Returns a normalized API error message from a parsed JSON response.
+ * Extracts a readable error message from a JSON response.
  *
  * @param {object|null} errorJson
  * @param {string} fallback
@@ -156,7 +149,7 @@ export function getJsonErrorMessage(errorJson, fallback) {
 }
 
 /**
- * Builds and throws a normalized Error from a failed HTTP response.
+ * Builds a normalized Error object from an HTTP response.
  *
  * @param {Response} response
  * @param {object|null} errorJson
@@ -220,10 +213,6 @@ export async function postJson(url, payload, timeoutMs = 15000, fetchOptions = {
 /**
  * Creates a debounced function wrapper.
  *
- * Note:
- * This utility is intentionally generic and does not store timer state itself.
- * The caller owns the timer lifecycle through the returned function.
- *
  * @param {Function} fn
  * @param {number} waitMs
  * @returns {Function}
@@ -240,7 +229,7 @@ export function debounce(fn, waitMs) {
 }
 
 /**
- * Trims and lowercases an email string.
+ * Normalizes an email string.
  *
  * @param {string} value
  * @returns {string}
@@ -250,7 +239,7 @@ export function normalizeEmail(value) {
 }
 
 /**
- * Normalizes a personal name by collapsing repeated whitespace.
+ * Normalizes a personal name.
  *
  * @param {string} value
  * @returns {string}
@@ -263,7 +252,7 @@ export function normalizePersonName(value) {
 }
 
 /**
- * Checks whether a time string matches HH:MM and is within valid ranges.
+ * Validates a time string in HH:MM format.
  *
  * @param {string} value
  * @returns {boolean}
@@ -271,9 +260,7 @@ export function normalizePersonName(value) {
 export function isValidTimeString(value) {
   const normalized = String(value || '');
 
-  if (!/^\d{2}:\d{2}$/.test(normalized)) {
-    return false;
-  }
+  if (!/^\d{2}:\d{2}$/.test(normalized)) return false;
 
   const [hours, minutes] = normalized.split(':').map(Number);
 
@@ -288,8 +275,7 @@ export function isValidTimeString(value) {
 }
 
 /**
- * Returns true if the provided error payload matches the configured
- * inactive-session code.
+ * Checks whether an error payload represents an inactive session.
  *
  * @param {object|null} errorJson
  * @param {string} inactiveCode
@@ -301,7 +287,7 @@ export function isSessionInactiveErrorPayload(errorJson, inactiveCode) {
 }
 
 /**
- * Returns a bounded number between min and max.
+ * Clamps a value between a minimum and maximum.
  *
  * @param {number} value
  * @param {number} min
