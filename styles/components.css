@@ -1,0 +1,175 @@
+// styles/components.css
+
+/* ============================================================================
+ * ZODIKA • Components Styles
+ * ----------------------------------------------------------------------------
+ * Reusable UI components that are not strictly part of the form structure.
+ *
+ * Phase 1 goals
+ * - Extract visual components out of form.css
+ * - Keep components reusable across products
+ * - Avoid coupling with specific form logic
+ * ========================================================================== */
+
+/* --------------------------------------------------------------------------
+ * Product Card (used in intro / hero steps)
+ * ------------------------------------------------------------------------ */
+
+.product-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  background: var(--color-background);
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  gap: var(--space-md);
+}
+
+.product-card-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  text-align: center;
+}
+
+.product-card-description {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+ * Checklist (benefits / features)
+ * ------------------------------------------------------------------------ */
+
+.checklist {
+  display: grid;
+  gap: var(--space-sm);
+}
+
+.checklist li {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.checklist li::before {
+  content: '✔';
+  color: var(--color-success);
+  font-size: var(--font-size-sm);
+  margin-top: 2px;
+}
+
+/* --------------------------------------------------------------------------
+ * Meta Card (small info blocks)
+ * ------------------------------------------------------------------------ */
+
+.meta-card {
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  background: var(--color-surface);
+}
+
+.meta-card-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-xs);
+}
+
+.meta-card-value {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* --------------------------------------------------------------------------
+ * Social Proof / Icons Row
+ * ------------------------------------------------------------------------ */
+
+.icon-row {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-md);
+}
+
+.icon-row img,
+.icon-row svg {
+  width: 24px;
+  height: 24px;
+  opacity: 0.8;
+}
+
+/* --------------------------------------------------------------------------
+ * Divider
+ * ------------------------------------------------------------------------ */
+
+.divider {
+  height: 1px;
+  background: var(--color-border);
+  width: 100%;
+  margin: var(--space-md) 0;
+}
+
+/* --------------------------------------------------------------------------
+ * Badge
+ * ------------------------------------------------------------------------ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  background: var(--color-primary-light);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+ * Floating Hint / Helper Text
+ * ------------------------------------------------------------------------ */
+
+.helper-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: 1.4;
+}
+
+/* --------------------------------------------------------------------------
+ * Step Illustration / Media
+ * ------------------------------------------------------------------------ */
+
+.step-media {
+  width: 100%;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.step-media img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* --------------------------------------------------------------------------
+ * Animations (lightweight)
+ * ------------------------------------------------------------------------ */
+
+.fade-in {
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
