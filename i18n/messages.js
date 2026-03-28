@@ -1,20 +1,20 @@
-// i18n/messages.js
+// src/i18n/messages.js
 
 /* ============================================================================
- * ZODIKA • i18n Messages
+ * ZODIKA • Messages
  * ----------------------------------------------------------------------------
- * Centralized dictionary for UI text and validation messages.
+ * Centralized dictionary for user-facing text.
  *
- * Phase 1 goals
- * - Keep ALL user-facing text out of business logic
- * - Support multiple languages (pt-BR, en-US)
- * - Allow future expansion without touching core modules
- * - Preserve backend contract (this is purely front-end)
+ * Responsibilities
+ * - Keep UI copy outside business logic
+ * - Support multiple languages
+ * - Provide a stable translation source for form modules
  * ========================================================================== */
 
 /**
  * Default message dictionary.
- * You can extend/override this via window.ZDK_FORM_MESSAGES later.
+ *
+ * The dictionary can be extended or overridden externally when needed.
  */
 export const messages = {
   'pt-BR': {
@@ -96,18 +96,8 @@ export const messages = {
   },
 };
 
-/* ============================================================================
- * Message Resolver
- * ----------------------------------------------------------------------------
- * Helper to safely retrieve nested messages
- * ========================================================================== */
-
 /**
  * Creates a translator function for a given locale.
- *
- * Usage:
- * const t = createTranslator(messages, 'pt-BR')
- * t('errors.invalidEmail')
  *
  * @param {object} messagesDict
  * @param {string} locale
