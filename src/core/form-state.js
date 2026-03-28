@@ -1,4 +1,4 @@
-//src/core/form-state.js
+// src/core/form-state.js
 
 /* ============================================================================
  * ZODIKA • Form State
