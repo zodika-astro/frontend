@@ -5,10 +5,10 @@
  * ----------------------------------------------------------------------------
  * Input and step validation helpers for the universal product form app.
  *
- * Phase 1 goals
+ * Responsibilities
+ * - Validate individual inputs and step-level form state
+ * - Manage inline error visibility and invalid field state
  * - Keep validation logic isolated from navigation and submit flows
- * - Preserve current backend contract by not changing external field names
- * - Support reusable product forms with configurable field mappings
  * ========================================================================== */
 
 import {
@@ -227,7 +227,7 @@ export function validateTimeInput(input, config, t) {
 }
 
 /**
- * Validates the birth place input based on current city selection state.
+ * Validates the birth place input using the current city-selection state.
  *
  * @param {HTMLInputElement|null} input
  * @param {object} state
