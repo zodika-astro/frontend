@@ -1,15 +1,4 @@
-// bundles/birth-chart.bundle.js
-
-/* ============================================================================
- * ZODIKA • Birth Chart Bundle
- * ----------------------------------------------------------------------------
- * Entry point for the Birth Chart form application.
- *
- * Responsibilities:
- * - Compose modules
- * - Initialize app
- * - Expose minimal global API (Webflow compatibility)
- * ========================================================================== */
+// src/bundles/birth-chart.bundle.js
 
 import { birthChartConfig } from '../products/birth-chart.config.js';
 
@@ -32,12 +21,9 @@ import {
 } from '../core/form-validation.js';
 
 import {
-  getTrackingStorageKeys,
   getTrackingApiUrls,
-  getStoredSessionToken,
   startFormSession,
   updateFormSessionProgress,
-  flushPendingUpdate,
   flushPendingUpdateWithKeepalive,
   createDraftSyncScheduler,
   bindDraftTrackingListeners,
@@ -59,8 +45,11 @@ import {
 } from '../core/form-overlays.js';
 
 import {
-  toAbsoluteUrl,
-} from '../core/form-utils.js';
+  getStorageKeys,
+  getSessionToken,
+} from '../core/form-storage.js';
+
+import { toAbsoluteUrl } from '../core/form-utils.js';
 
 /* ============================================================================
  * Bootstrap
@@ -80,7 +69,7 @@ import {
   const t = createTranslator(window.ZDK_FORM_MESSAGES || {}, config.locale);
 
   /* ------------------------------------------------------------------------
-   * API URLs
+   * API
    * ---------------------------------------------------------------------- */
 
   const apiUrls = Object.fromEntries(
@@ -91,13 +80,14 @@ import {
   );
 
   const trackingApiUrls = getTrackingApiUrls(apiUrls);
-  const storageKeys = getTrackingStorageKeys(config);
+  const storageKeys = getStorageKeys(config);
 
   /* ------------------------------------------------------------------------
-   * Restore session (if exists)
+   * Restore session
    * ---------------------------------------------------------------------- */
 
-  const storedToken = getStoredSessionToken(storageKeys);
+  const storedToken = getSessionToken(storageKeys);
+
   if (storedToken) {
     state.session.token = storedToken;
     state.session.isStarted = true;
@@ -207,6 +197,28 @@ import {
   }
 
   /* ------------------------------------------------------------------------
+   * Button binding (CRITICAL)
+   * ---------------------------------------------------------------------- */
+
+  dom.form.addEventListener('click', (event) => {
+    const action = event.target.closest('[data-action]')?.dataset.action;
+
+    if (!action) return;
+
+    if (action === 'next') {
+      nextStep();
+    }
+
+    if (action === 'back') {
+      prevStep();
+    }
+
+    if (action === 'reset') {
+      window.location.reload();
+    }
+  });
+
+  /* ------------------------------------------------------------------------
    * Submit
    * ---------------------------------------------------------------------- */
 
@@ -264,17 +276,6 @@ import {
       storageKeys,
     });
   });
-
-  /* ------------------------------------------------------------------------
-   * Global (Webflow compatibility)
-   * ---------------------------------------------------------------------- */
-
-  window.nextStep = nextStep;
-  window.prevStep = prevStep;
-
-  window.resetForm = () => {
-    window.location.reload();
-  };
 
   console.log('[ZDK] Birth Chart Form Initialized');
 })();
