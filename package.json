@@ -1,5 +1,5 @@
 {
-  "name": "zodika-frontend",
+  "name": "frontend",
   "version": "1.0.0",
   "description": "Zodika frontend build pipeline",
   "type": "module",
