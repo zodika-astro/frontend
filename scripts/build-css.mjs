@@ -1,5 +1,3 @@
-//scripts/build-css.mjs
-
 import fs from 'fs';
 import path from 'path';
 
