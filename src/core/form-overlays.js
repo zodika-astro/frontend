@@ -6,10 +6,10 @@
  * Overlay open/close helpers and focus management for the universal product
  * form app.
  *
- * Phase 1 goals
- * - Isolate modal/overlay behavior from submit and tracking logic
- * - Preserve current UX behavior
- * - Improve focus handling and accessibility structure
+ * Responsibilities
+ * - Control loading and error overlays
+ * - Manage focus when overlays open and close
+ * - Keep overlay behavior isolated from submit and tracking logic
  * ========================================================================== */
 
 /**
@@ -107,7 +107,7 @@ export function closeOverlay({ overlayElement, state }) {
 }
 
 /**
- * Updates the generic error overlay to show the inactive-session message.
+ * Updates the error overlay content for an inactive session state.
  *
  * @param {object} params
  * @param {HTMLElement|null} params.errorOverlay
@@ -135,8 +135,8 @@ export function setSessionExpiredOverlayContent({ errorOverlay, t }) {
 }
 
 /**
- * Convenience helper that closes the loading overlay, updates the error
- * overlay copy to the session-expired state, and opens the error overlay.
+ * Closes the loading overlay, updates the error overlay content for an inactive
+ * session, and opens the error overlay.
  *
  * @param {object} params
  * @param {HTMLElement|null} params.spinnerOverlay
