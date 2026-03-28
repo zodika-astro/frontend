@@ -3,26 +3,26 @@
 /* ============================================================================
  * ZODIKA • Components Styles
  * ----------------------------------------------------------------------------
- * Reusable UI components that are not strictly part of the form structure.
+ * Reusable UI components that are not strictly part of the core form layout.
  *
- * Phase 1 goals
- * - Extract visual components out of form.css
- * - Keep components reusable across products
- * - Avoid coupling with specific form logic
+ * Responsibilities
+ * - Define reusable presentation components
+ * - Keep visual patterns isolated from structural form styles
+ * - Support reuse across multiple product forms
  * ========================================================================== */
 
 /* --------------------------------------------------------------------------
- * Product Card (used in intro / hero steps)
+ * Product Card
  * ------------------------------------------------------------------------ */
 
 .product-card {
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  padding: var(--space-lg);
-  background: var(--color-background);
-  box-shadow: var(--shadow-sm);
   display: grid;
   gap: var(--space-md);
+  padding: var(--space-lg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-background);
+  box-shadow: var(--shadow-sm);
 }
 
 .product-card-title {
@@ -33,13 +33,13 @@
 
 .product-card-description {
   font-size: var(--font-size-sm);
-  color: var(--color-text-muted);
-  text-align: center;
   line-height: 1.5;
+  text-align: center;
+  color: var(--color-text-muted);
 }
 
 /* --------------------------------------------------------------------------
- * Checklist (benefits / features)
+ * Checklist
  * ------------------------------------------------------------------------ */
 
 .checklist {
@@ -58,26 +58,27 @@
 
 .checklist li::before {
   content: '✔';
+  flex: 0 0 auto;
   color: var(--color-success);
   font-size: var(--font-size-sm);
   margin-top: 2px;
 }
 
 /* --------------------------------------------------------------------------
- * Meta Card (small info blocks)
+ * Meta Card
  * ------------------------------------------------------------------------ */
 
 .meta-card {
+  padding: var(--space-md);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  padding: var(--space-md);
   background: var(--color-surface);
 }
 
 .meta-card-title {
+  margin-bottom: var(--space-xs);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
-  margin-bottom: var(--space-xs);
 }
 
 .meta-card-value {
@@ -86,7 +87,7 @@
 }
 
 /* --------------------------------------------------------------------------
- * Social Proof / Icons Row
+ * Social Icons Row
  * ------------------------------------------------------------------------ */
 
 .icon-row {
@@ -107,10 +108,10 @@
  * ------------------------------------------------------------------------ */
 
 .divider {
-  height: 1px;
-  background: var(--color-border);
   width: 100%;
+  height: 1px;
   margin: var(--space-md) 0;
+  background: var(--color-border);
 }
 
 /* --------------------------------------------------------------------------
@@ -130,44 +131,45 @@
 }
 
 /* --------------------------------------------------------------------------
- * Floating Hint / Helper Text
+ * Helper Text
  * ------------------------------------------------------------------------ */
 
 .helper-text {
   font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
   line-height: 1.4;
+  color: var(--color-text-muted);
 }
 
 /* --------------------------------------------------------------------------
- * Step Illustration / Media
+ * Step Media
  * ------------------------------------------------------------------------ */
 
 .step-media {
   width: 100%;
-  border-radius: var(--radius-md);
   overflow: hidden;
+  border-radius: var(--radius-md);
 }
 
 .step-media img {
+  display: block;
   width: 100%;
   height: auto;
-  display: block;
 }
 
 /* --------------------------------------------------------------------------
- * Animations (lightweight)
+ * Motion
  * ------------------------------------------------------------------------ */
 
 .fade-in {
-  animation: fadeIn 0.25s ease;
+  animation: fade-in 0.25s ease;
 }
 
-@keyframes fadeIn {
+@keyframes fade-in {
   from {
     opacity: 0;
     transform: translateY(6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
