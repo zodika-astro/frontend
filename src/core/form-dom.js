@@ -6,23 +6,14 @@
  * DOM querying and element resolution helpers for the universal product form
  * app.
  *
- * Phase 1 goals
+ * Responsibilities
  * - Centralize DOM lookup logic
- * - Reduce scattered selectors across modules
- * - Prepare the app for future multi-product and multi-form support
- * - Keep backend contract untouched (DOM structure is front-end only)
+ * - Provide consistent access to form-related elements
+ * - Reduce selector duplication across modules
  * ========================================================================== */
 
 /**
  * Resolves the DOM elements required by the form app.
- *
- * Current behavior:
- * - Preserves compatibility with the current production HTML structure
- * - Uses the configured selectors exactly as provided
- *
- * Future evolution:
- * - Can be extended later to support container-scoped queries and data-role
- *   selectors for more reusable templates
  *
  * @param {object} selectors
  * @returns {object}
@@ -47,8 +38,6 @@ export function resolveDom(selectors) {
 /**
  * Returns true when the minimum required DOM structure exists.
  *
- * This should be used by the app bootstrap layer before binding events.
- *
  * @param {object} dom
  * @returns {boolean}
  */
@@ -57,7 +46,7 @@ export function hasRequiredDom(dom) {
 }
 
 /**
- * Returns a named input inside the resolved form.
+ * Returns a named input inside the form.
  *
  * @param {HTMLFormElement|null} form
  * @param {string} fieldName
@@ -69,7 +58,7 @@ export function getNamedInput(form, fieldName) {
 }
 
 /**
- * Returns a named select inside the resolved form.
+ * Returns a named select inside the form.
  *
  * @param {HTMLFormElement|null} form
  * @param {string} fieldName
@@ -81,7 +70,7 @@ export function getNamedSelect(form, fieldName) {
 }
 
 /**
- * Returns any named field inside the resolved form.
+ * Returns any named field inside the form.
  *
  * @param {HTMLFormElement|null} form
  * @param {string} fieldName
@@ -104,9 +93,7 @@ export function getElementByIdSafe(elementId) {
 }
 
 /**
- * Sets the value of an element identified by ID if the element exists.
- *
- * Useful for hidden inputs populated by integrations such as Google Places.
+ * Sets the value of an element identified by ID if it exists.
  *
  * @param {string} elementId
  * @param {string} value
@@ -135,7 +122,7 @@ export function clearElementValuesById(elementIds) {
 }
 
 /**
- * Returns all hidden place-related field IDs from config in a stable array.
+ * Returns all hidden place-related field IDs from config.
  *
  * @param {object} config
  * @returns {string[]}
