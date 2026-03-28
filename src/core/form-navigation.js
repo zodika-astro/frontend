@@ -6,10 +6,10 @@
  * Step rendering, progress UI, and navigation helpers for the universal
  * product form app.
  *
- * Phase 1 goals
+ * Responsibilities
+ * - Render the active step
+ * - Update progress state and progress UI
  * - Keep step navigation isolated from tracking and submit logic
- * - Support reusable multi-step flows across products
- * - Preserve current UX behavior while improving internal structure
  * ========================================================================== */
 
 /**
