@@ -1,7 +1,9 @@
+// src/styles/form.css
+
 /* ============================================================================
  * ZODIKA • Form Styles
  * ----------------------------------------------------------------------------
- * Core layout and form-specific UI for universal product forms.
+ * Core layout and form-specific UI for reusable product forms.
  *
  * Responsibilities
  * - Define form layout and structure
@@ -13,13 +15,13 @@
  * App Shell
  * ------------------------------------------------------------------------ */
 
-.natal-app {
+.form-app {
   min-height: 100dvh;
   background: var(--color-background);
   color: var(--color-text);
 }
 
-.natal-shell {
+.form-shell {
   padding: var(--space-md);
 }
 
@@ -41,7 +43,7 @@
   color: var(--color-text-muted);
 }
 
-.natal-form-container {
+.form-container {
   width: 100%;
   max-width: var(--max-width);
   margin: 0 auto;
@@ -51,13 +53,13 @@
  * Form Card
  * ------------------------------------------------------------------------ */
 
-.natal-form {
-  background: var(--color-background);
+.form {
+  position: relative;
+  padding: var(--space-xl);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-lg);
+  background: var(--color-background);
   box-shadow: var(--shadow-md);
-  padding: var(--space-xl);
-  position: relative;
 }
 
 /* --------------------------------------------------------------------------
@@ -66,6 +68,10 @@
 
 .progress-container {
   margin-bottom: var(--space-lg);
+}
+
+.progress-bar {
+  width: 100%;
 }
 
 .progress-indicator {
@@ -85,23 +91,35 @@
   background: var(--color-primary);
 }
 
+.progress-status {
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
 /* --------------------------------------------------------------------------
  * Steps
  * ------------------------------------------------------------------------ */
 
-.natal-step {
+.form-step {
   display: none;
   flex-direction: column;
   gap: var(--space-md);
   min-height: 320px;
 }
 
-.natal-step.active {
+.form-step.active {
   display: flex;
 }
 
-.natal-step[aria-hidden='true'] {
+.form-step[aria-hidden='true'] {
   display: none !important;
+}
+
+.step-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
 }
 
 .step-title {
@@ -109,6 +127,25 @@
   font-weight: var(--font-weight-semibold);
   line-height: 1.3;
   color: var(--color-text);
+}
+
+.step-count {
+  margin-right: var(--space-xs);
+  color: var(--color-primary);
+}
+
+.meta-row {
+  min-height: 20px;
+}
+
+.form-note {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+}
+
+.form-note.placeholder {
+  visibility: hidden;
 }
 
 /* --------------------------------------------------------------------------
@@ -119,44 +156,54 @@
   position: relative;
 }
 
-.natal-input,
-.natal-select,
-.natal-select-btn {
+.form-input,
+.form-select,
+.form-select-btn {
   width: 100%;
   min-height: var(--input-height);
+  padding: 0 var(--space-md);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
   color: var(--color-text);
-  padding: 0 var(--space-md);
   transition:
     border-color 0.2s ease,
     box-shadow 0.2s ease,
     background-color 0.2s ease;
 }
 
-.natal-input::placeholder {
+.form-input::placeholder {
   color: var(--color-text-muted);
 }
 
-.natal-input:focus,
-.natal-select:focus,
-.natal-select-btn:focus-visible {
+.form-input:focus,
+.form-select:focus,
+.form-select-btn:focus-visible {
   border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(92, 45, 145, 0.18);
   background: var(--color-background);
 }
 
-.natal-input.invalid,
-.natal-select.invalid,
-.natal-select[aria-invalid='true'],
-.natal-select-btn[aria-invalid='true'] {
+.form-input.invalid,
+.form-select.invalid,
+.form-select[aria-invalid='true'],
+.form-select-btn[aria-invalid='true'] {
   border-color: var(--color-error);
   background: rgba(211, 47, 47, 0.06);
 }
 
-.natal-time {
+.form-time {
   appearance: auto;
+  -webkit-appearance: auto;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  right: var(--space-md);
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
 }
 
 /* --------------------------------------------------------------------------
@@ -167,11 +214,10 @@
   display: none;
   margin-top: var(--space-sm);
   font-size: var(--font-size-sm);
-  color: var(--color-error);
   line-height: 1.4;
+  color: var(--color-error);
 }
 
-/* HTML hidden attribute support */
 .error[hidden] {
   display: none !important;
 }
@@ -187,10 +233,10 @@
   padding-top: var(--space-md);
 }
 
-.natal-btn {
+.form-btn {
   min-height: 52px;
-  border-radius: var(--radius-md);
   padding: 0 var(--space-lg);
+  border-radius: var(--radius-md);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -205,27 +251,28 @@
     color 0.2s ease;
 }
 
-.natal-btn.next {
+.form-btn.next {
   background: var(--color-primary);
   color: #fff;
   box-shadow: var(--shadow-sm);
 }
 
-.natal-btn.next:hover {
+.form-btn.next:hover {
   background: var(--color-primary-light);
 }
 
-.natal-btn.back {
+.form-btn.back {
+  border: 1px solid var(--color-border);
   background: var(--color-background);
   color: var(--color-text);
-  border: 1px solid var(--color-border);
 }
 
-.natal-btn.back:hover {
+.form-btn.back:hover {
   background: var(--color-surface);
 }
 
-.natal-btn:disabled {
+.form-btn:disabled,
+.form-btn[disabled] {
   opacity: 0.6;
   cursor: not-allowed;
   transform: none;
@@ -235,14 +282,16 @@
  * Confirmation
  * ------------------------------------------------------------------------ */
 
+.confirmation-summary,
 #confirmation-summary {
+  padding: var(--space-md);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   background: var(--color-surface);
-  padding: var(--space-md);
   line-height: 1.7;
 }
 
+.confirmation-summary ul,
 #confirmation-summary ul {
   display: grid;
   gap: var(--space-sm);
@@ -251,6 +300,10 @@
 /* --------------------------------------------------------------------------
  * Consent
  * ------------------------------------------------------------------------ */
+
+.form-consent {
+  margin-top: var(--space-md);
+}
 
 .form-consent-label {
   display: flex;
@@ -280,7 +333,7 @@
  * ------------------------------------------------------------------------ */
 
 @media (max-width: 768px) {
-  .natal-form {
+  .form {
     padding: var(--space-lg);
   }
 
@@ -298,16 +351,16 @@
     padding-top: var(--space-lg);
   }
 
-  .natal-shell {
+  .form-shell {
     padding: var(--space-sm);
   }
 
-  .natal-form {
+  .form {
     padding: var(--space-md);
     border-radius: var(--radius-md);
   }
 
-  .natal-step {
+  .form-step {
     min-height: 280px;
   }
 }
