@@ -5,11 +5,10 @@
  * ----------------------------------------------------------------------------
  * SessionStorage helpers for the universal product form app.
  *
- * Phase 1 goals
+ * Responsibilities
  * - Isolate browser storage concerns
- * - Namespace keys by product to avoid conflicts
- * - Keep storage logic safe and resilient (no crashes if storage fails)
- * - Preserve backend contract (storage is purely front-end concern)
+ * - Namespace keys by product
+ * - Keep storage access safe and resilient
  * ========================================================================== */
 
 /**
@@ -26,10 +25,6 @@ export function getStorageKeys(config) {
     pendingUpdate: `zdk_${productKey}_pending_update`,
   };
 }
-
-/* --------------------------------------------------------------------------
- * Session Token
- * ------------------------------------------------------------------------ */
 
 /**
  * Reads the session token from sessionStorage.
@@ -69,10 +64,6 @@ export function clearSessionToken(storageKeys) {
     sessionStorage.removeItem(storageKeys.sessionToken);
   } catch {}
 }
-
-/* --------------------------------------------------------------------------
- * Pending Update Payload (used for draft sync and resilience)
- * ------------------------------------------------------------------------ */
 
 /**
  * Reads the pending update payload from sessionStorage.
@@ -119,18 +110,12 @@ export function clearPendingUpdate(storageKeys) {
   } catch {}
 }
 
-/* --------------------------------------------------------------------------
- * Generic helpers (optional, future-proof)
- * ------------------------------------------------------------------------ */
-
 /**
- * Safely removes all storage keys related to the current product.
+ * Removes all storage entries related to the current form instance.
  *
  * @param {object} storageKeys
  */
 export function clearAllFormStorage(storageKeys) {
-  try {
-    clearSessionToken(storageKeys);
-    clearPendingUpdate(storageKeys);
-  } catch {}
+  clearSessionToken(storageKeys);
+  clearPendingUpdate(storageKeys);
 }
