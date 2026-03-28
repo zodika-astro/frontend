@@ -1,0 +1,141 @@
+// styles/overlays.css
+
+/* ============================================================================
+ * ZODIKA • Overlays Styles
+ * ----------------------------------------------------------------------------
+ * Styles for loading spinner and error overlays.
+ *
+ * Phase 1 goals
+ * - Isolate overlay styling from form layout
+ * - Ensure accessibility and consistent UX
+ * - Keep reusable across products
+ * ========================================================================== */
+
+/* --------------------------------------------------------------------------
+ * Overlay Base
+ * ------------------------------------------------------------------------ */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: none; /* controlled via JS */
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 9999;
+  padding: var(--space-md);
+}
+
+/* visible state (optional utility) */
+.overlay.is-active {
+  display: flex;
+}
+
+/* --------------------------------------------------------------------------
+ * Overlay Card
+ * ------------------------------------------------------------------------ */
+
+.overlay-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-background);
+  border-radius: var(--radius-lg);
+  padding: var(--space-xl);
+  box-shadow: var(--shadow-md);
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+}
+
+/* --------------------------------------------------------------------------
+ * Spinner Overlay
+ * ------------------------------------------------------------------------ */
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 4px solid var(--color-border);
+  border-top-color: var(--color-primary);
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+.overlay-loading-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+ * Error Overlay
+ * ------------------------------------------------------------------------ */
+
+.overlay-error-title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.overlay-error-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+ * Overlay Buttons
+ * ------------------------------------------------------------------------ */
+
+.overlay-actions {
+  display: flex;
+  justify-content: center;
+  gap: var(--space-sm);
+  margin-top: var(--space-sm);
+}
+
+.overlay-actions .btn {
+  min-height: 44px;
+  padding: 0 var(--space-md);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+}
+
+/* --------------------------------------------------------------------------
+ * Animations
+ * ------------------------------------------------------------------------ */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Fade in overlay */
+.overlay.fade-in {
+  animation: overlayFade 0.2s ease;
+}
+
+@keyframes overlayFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Reduced Motion
+ * ------------------------------------------------------------------------ */
+
+@media (prefers-reduced-motion: reduce) {
+  .spinner {
+    animation: none;
+  }
+
+  .overlay.fade-in {
+    animation: none;
+  }
+}
