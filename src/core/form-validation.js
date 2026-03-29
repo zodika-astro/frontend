@@ -3,31 +3,32 @@
 /* ============================================================================
  * ZODIKA • Form Validation
  * ----------------------------------------------------------------------------
- * Input and step validation helpers for the universal product form app.
+ * Input validation and error handling helpers.
  *
  * Responsibilities
- * - Validate individual inputs and step-level form state
- * - Manage inline error visibility and invalid field state
- * - Keep validation logic isolated from navigation and submit flows
+ * - Validate individual inputs and steps
+ * - Control error visibility and accessibility attributes
+ * - Normalize input values when needed
  * ========================================================================== */
 
 import {
-  getLocalTodayISO,
   normalizeEmail,
   normalizePersonName,
   isValidTimeString,
+  getLocalTodayISO,
 } from './form-utils.js';
 
 /**
- * Sets the visible text inside an error container.
+ * Sets error text inside a container.
  *
  * @param {HTMLElement|null} container
  * @param {string} message
  */
-export function setErrorText(container, message) {
+function setErrorText(container, message) {
   if (!container) return;
 
   const explicitTextNode = container.querySelector('[id$="Text"]');
+
   if (explicitTextNode) {
     explicitTextNode.textContent = message;
     return;
@@ -37,7 +38,7 @@ export function setErrorText(container, message) {
 }
 
 /**
- * Shows an error container and updates its message.
+ * Shows an error message.
  *
  * @param {string} errorId
  * @param {string} message
@@ -46,17 +47,19 @@ export function showError(errorId, message) {
   const element = document.getElementById(errorId);
   if (!element) return;
 
+  element.removeAttribute('hidden');
+  element.style.display = 'block';
+
   if (typeof message === 'string') {
     setErrorText(element, message);
   }
 
-  element.style.display = 'block';
   element.setAttribute('role', 'alert');
   element.setAttribute('aria-live', 'polite');
 }
 
 /**
- * Hides an error container.
+ * Hides an error message.
  *
  * @param {string} errorId
  */
@@ -70,10 +73,10 @@ export function hideError(errorId) {
 }
 
 /**
- * Marks a field as invalid and optionally shows an associated error message.
+ * Marks a field as invalid and shows the associated error.
  *
  * @param {HTMLElement|null} field
- * @param {string|null} errorId
+ * @param {string} errorId
  * @param {string} message
  * @returns {false}
  */
@@ -91,10 +94,10 @@ export function markFieldInvalid(field, errorId, message) {
 }
 
 /**
- * Clears the invalid state for a field and its associated error container.
+ * Clears invalid state from a field and hides its error.
  *
  * @param {HTMLElement|null} field
- * @param {string|null} errorId
+ * @param {string} errorId
  * @returns {true}
  */
 export function clearFieldInvalid(field, errorId) {
@@ -111,9 +114,38 @@ export function clearFieldInvalid(field, errorId) {
 }
 
 /**
- * Validates the email input field.
+ * Clears all known error messages.
  *
- * @param {HTMLInputElement|null} input
+ * @param {object} config
+ */
+export function clearAllErrors(config) {
+  if (!config?.errorIds) return;
+
+  Object.values(config.errorIds).forEach((errorId) => {
+    hideError(errorId);
+  });
+}
+
+/**
+ * Clears all invalid states from fields inside a form.
+ *
+ * @param {HTMLFormElement} form
+ */
+export function clearAllInvalidStates(form) {
+  if (!form) return;
+
+  const fields = form.querySelectorAll('[aria-invalid="true"], .invalid');
+
+  fields.forEach((field) => {
+    field.classList.remove('invalid');
+    field.removeAttribute('aria-invalid');
+  });
+}
+
+/**
+ * Validates email input.
+ *
+ * @param {HTMLInputElement} input
  * @param {object} config
  * @param {Function} t
  * @returns {boolean}
@@ -131,13 +163,14 @@ export function validateEmailInput(input, config, t) {
   }
 
   input.value = value;
+
   return clearFieldInvalid(input, config.errorIds.email);
 }
 
 /**
- * Validates the full name input field.
+ * Validates full name input.
  *
- * @param {HTMLInputElement|null} input
+ * @param {HTMLInputElement} input
  * @param {object} config
  * @param {Function} t
  * @returns {boolean}
@@ -160,13 +193,14 @@ export function validateNameInput(input, config, t) {
   }
 
   input.value = normalized;
+
   return clearFieldInvalid(input, config.errorIds.name);
 }
 
 /**
- * Validates the birth date input field.
+ * Validates birth date input.
  *
- * @param {HTMLInputElement|null} input
+ * @param {HTMLInputElement} input
  * @param {object} config
  * @param {Function} t
  * @returns {boolean}
@@ -205,9 +239,9 @@ export function validateDateInput(input, config, t) {
 }
 
 /**
- * Validates the birth time input field.
+ * Validates birth time input.
  *
- * @param {HTMLInputElement|null} input
+ * @param {HTMLInputElement} input
  * @param {object} config
  * @param {Function} t
  * @returns {boolean}
@@ -227,9 +261,9 @@ export function validateTimeInput(input, config, t) {
 }
 
 /**
- * Validates the birth place input using the current city-selection state.
+ * Validates city input based on Google Places selection.
  *
- * @param {HTMLInputElement|null} input
+ * @param {HTMLInputElement} input
  * @param {object} state
  * @param {object} config
  * @param {Function} t
@@ -248,9 +282,9 @@ export function validateCityInput(input, state, config, t) {
 }
 
 /**
- * Validates the privacy consent checkbox.
+ * Validates privacy checkbox.
  *
- * @param {HTMLInputElement|null} input
+ * @param {HTMLInputElement} input
  * @param {object} config
  * @param {Function} t
  * @returns {boolean}
@@ -266,16 +300,18 @@ export function validatePrivacyCheckbox(input, config, t) {
     );
 
     input?.setAttribute('aria-invalid', 'true');
+
     return false;
   }
 
   hideError(config.errorIds.privacy);
   input?.removeAttribute('aria-invalid');
+
   return true;
 }
 
 /**
- * Validates all relevant fields inside a given step element.
+ * Validates all inputs inside a step container.
  *
  * @param {HTMLElement|null} stepElement
  * @param {object} state
@@ -288,6 +324,7 @@ export function validateStepFields(stepElement, state, config, t) {
 
   const inputs = Array.from(stepElement.querySelectorAll('input'));
   const selects = Array.from(stepElement.querySelectorAll('select'));
+
   let isValid = true;
 
   for (const input of inputs) {
@@ -329,30 +366,4 @@ export function validateStepFields(stepElement, state, config, t) {
   }
 
   return isValid;
-}
-
-/**
- * Clears all configured form error containers.
- *
- * @param {object} config
- */
-export function clearAllErrors(config) {
-  Object.values(config.errorIds || {}).forEach(hideError);
-}
-
-/**
- * Clears invalid styling and aria-invalid attributes inside a form element.
- *
- * @param {HTMLFormElement|null} form
- */
-export function clearAllInvalidStates(form) {
-  if (!form) return;
-
-  form.querySelectorAll('.invalid').forEach((element) => {
-    element.classList.remove('invalid');
-  });
-
-  form.querySelectorAll('[aria-invalid="true"]').forEach((element) => {
-    element.removeAttribute('aria-invalid');
-  });
 }
