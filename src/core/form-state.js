@@ -3,16 +3,17 @@
 /* ============================================================================
  * ZODIKA • Form State
  * ----------------------------------------------------------------------------
- * Centralized in-memory state for the universal product form app.
+ * Centralized in-memory state for the form application.
  *
  * Responsibilities
- * - Maintain UI, tracking, session, and integration state
- * - Provide predictable and explicit state structure
- * - Avoid scattered mutable globals
+ * - Hold UI state (current step, submission flags, focus handling)
+ * - Hold tracking state (debounce timers, sync flags)
+ * - Hold session state (token lifecycle)
+ * - Hold integration state (city selection and validation)
  * ========================================================================== */
 
 /**
- * Creates the initial runtime state for a form instance.
+ * Creates the initial form state.
  *
  * @returns {object}
  */
@@ -43,53 +44,7 @@ export function createInitialFormState() {
 }
 
 /**
- * Resets the runtime state in place while preserving the object reference.
- *
- * @param {object} state
- * @returns {object}
- */
-export function resetFormState(state) {
-  if (!state || typeof state !== 'object') {
-    return createInitialFormState();
-  }
-
-  state.ui.currentStepIndex = 0;
-  state.ui.isSubmitting = false;
-  state.ui.lastFocusedBeforeOverlay = null;
-
-  state.tracking.isSyncingStep = false;
-  state.tracking.draftSyncTimer = null;
-
-  state.session.token = null;
-  state.session.isStarted = false;
-
-  state.city.isValidated = false;
-  state.city.selectedDisplay = '';
-  state.city.placePayload = null;
-
-  return state;
-}
-
-/**
- * Applies a stored session token to the runtime state.
- *
- * @param {object} state
- * @param {string|null} token
- * @returns {object}
- */
-export function applyStoredSessionToken(state, token) {
-  if (!state || typeof state !== 'object') {
-    return state;
-  }
-
-  state.session.token = token || null;
-  state.session.isStarted = Boolean(token);
-
-  return state;
-}
-
-/**
- * Clears the active session from state.
+ * Clears session-related state.
  *
  * @param {object} state
  * @returns {object}
@@ -106,59 +61,31 @@ export function clearSessionState(state) {
 }
 
 /**
- * Clears city-related state.
+ * Resets the entire form state to its initial values.
  *
  * @param {object} state
- * @returns {object}
  */
-export function clearCityState(state) {
-  if (!state || typeof state !== 'object') {
-    return state;
+export function resetFormState(state) {
+  if (!state || typeof state !== 'object') return;
+
+  const initial = createInitialFormState();
+
+  state.ui.currentStepIndex = initial.ui.currentStepIndex;
+  state.ui.isSubmitting = initial.ui.isSubmitting;
+  state.ui.lastFocusedBeforeOverlay = initial.ui.lastFocusedBeforeOverlay;
+
+  state.tracking.isSyncingStep = initial.tracking.isSyncingStep;
+
+  if (state.tracking.draftSyncTimer) {
+    clearTimeout(state.tracking.draftSyncTimer);
   }
 
-  state.city.isValidated = false;
-  state.city.selectedDisplay = '';
-  state.city.placePayload = null;
+  state.tracking.draftSyncTimer = null;
 
-  return state;
-}
+  state.session.token = initial.session.token;
+  state.session.isStarted = initial.session.isStarted;
 
-/**
- * Returns whether a session token is present.
- *
- * @param {object} state
- * @returns {boolean}
- */
-export function hasActiveSessionToken(state) {
-  return Boolean(state?.session?.token);
-}
-
-/**
- * Returns whether a submit operation is in progress.
- *
- * @param {object} state
- * @returns {boolean}
- */
-export function isSubmitting(state) {
-  return Boolean(state?.ui?.isSubmitting);
-}
-
-/**
- * Returns whether a step sync operation is in progress.
- *
- * @param {object} state
- * @returns {boolean}
- */
-export function isTrackingStepSyncInFlight(state) {
-  return Boolean(state?.tracking?.isSyncingStep);
-}
-
-/**
- * Returns whether the birth place is validated.
- *
- * @param {object} state
- * @returns {boolean}
- */
-export function isBirthPlaceValidated(state) {
-  return Boolean(state?.city?.isValidated);
+  state.city.isValidated = initial.city.isValidated;
+  state.city.selectedDisplay = initial.city.selectedDisplay;
+  state.city.placePayload = initial.city.placePayload;
 }
