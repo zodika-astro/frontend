@@ -3,17 +3,17 @@
 /* ============================================================================
  * ZODIKA • Form Navigation
  * ----------------------------------------------------------------------------
- * Step rendering, progress UI, and navigation helpers for the universal
- * product form app.
+ * Step navigation helpers for multi-step product forms.
  *
  * Responsibilities
- * - Render the active step
- * - Update progress state and progress UI
- * - Keep step navigation isolated from tracking and submit logic
+ * - Manage step transitions and visibility
+ * - Control navigation boundaries
+ * - Update progress UI state
+ * - Handle focus management for accessibility
  * ========================================================================== */
 
 /**
- * Returns the configured step key for a given index.
+ * Returns the step key by index.
  *
  * @param {object} config
  * @param {number} index
@@ -24,7 +24,7 @@ export function getStepKeyByIndex(config, index) {
 }
 
 /**
- * Returns the current active step element.
+ * Returns the current step element.
  *
  * @param {object} dom
  * @param {object} state
@@ -39,7 +39,7 @@ export function getCurrentStepElement(dom, state) {
  *
  * @param {HTMLElement|null} rootElement
  */
-export function focusFirstInteractive(rootElement) {
+function focusFirstInteractive(rootElement) {
   if (!rootElement) return;
 
   const selectors = [
@@ -61,17 +61,19 @@ export function focusFirstInteractive(rootElement) {
 }
 
 /**
- * Updates the visual progress UI based on the current step index.
+ * Updates the progress bar UI.
  *
  * @param {object} dom
  * @param {object} state
  */
-export function updateProgressUI(dom, state) {
+function updateProgressUI(dom, state) {
   if (!dom?.progressSteps?.length) return;
 
   dom.progressSteps.forEach((element, index) => {
     const isActive = index <= state.ui.currentStepIndex;
+
     element.classList.toggle('active', isActive);
+
     element.setAttribute(
       'aria-current',
       index === state.ui.currentStepIndex ? 'step' : 'false'
@@ -80,7 +82,7 @@ export function updateProgressUI(dom, state) {
 }
 
 /**
- * Renders the requested step and updates visibility state.
+ * Shows a specific step.
  *
  * @param {object} params
  * @param {object} params.dom
@@ -92,6 +94,7 @@ export function showStep({ dom, state, index, onAfterShowStep }) {
   if (!dom?.steps?.length || !state?.ui) return;
 
   const boundedIndex = Math.max(0, Math.min(index, dom.steps.length - 1));
+
   state.ui.currentStepIndex = boundedIndex;
 
   dom.steps.forEach((stepElement, stepIndex) => {
@@ -114,7 +117,7 @@ export function showStep({ dom, state, index, onAfterShowStep }) {
 }
 
 /**
- * Returns whether the user can move to the next step.
+ * Checks if the user can advance to the next step.
  *
  * @param {object} dom
  * @param {object} state
@@ -122,21 +125,22 @@ export function showStep({ dom, state, index, onAfterShowStep }) {
  */
 export function canAdvanceToNextStep(dom, state) {
   if (!dom?.steps?.length || !state?.ui) return false;
+
   return state.ui.currentStepIndex < dom.steps.length - 1;
 }
 
 /**
- * Returns whether the user can move to the previous step.
+ * Checks if the user can go back.
  *
  * @param {object} state
  * @returns {boolean}
  */
 export function canGoToPreviousStep(state) {
-  return Boolean(state?.ui?.currentStepIndex > 0);
+  return (state?.ui?.currentStepIndex || 0) > 0;
 }
 
 /**
- * Returns the next step index without mutating state.
+ * Returns the next step index.
  *
  * @param {object} state
  * @returns {number}
@@ -146,11 +150,14 @@ export function getNextStepIndex(state) {
 }
 
 /**
- * Returns the previous step index without mutating state.
+ * Returns the previous step index.
  *
  * @param {object} state
  * @returns {number}
  */
 export function getPreviousStepIndex(state) {
-  return Math.max(0, Number(state?.ui?.currentStepIndex || 0) - 1);
+  return Math.max(
+    0,
+    Number(state?.ui?.currentStepIndex || 0) - 1
+  );
 }
