@@ -17,24 +17,29 @@
 
 .product-card {
   display: grid;
-  gap: var(--space-md);
-  padding: var(--space-lg);
+  grid-template-columns: 1fr minmax(140px, 220px);
+  gap: 18px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background: var(--color-background);
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-md);
+  background: rgba(255, 251, 244, 0.55);
 }
 
 .product-card-title {
-  font-size: var(--font-size-lg);
-  font-weight: var(--font-weight-semibold);
-  text-align: center;
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: left;
+  text-transform: lowercase;
 }
 
 .product-card-description {
   font-size: var(--font-size-sm);
   line-height: 1.5;
-  text-align: center;
+  text-align: left;
   color: var(--color-text-muted);
 }
 
@@ -44,24 +49,45 @@
 
 .checklist {
   display: grid;
-  gap: var(--space-sm);
+  gap: 0;
+  margin: 0 0 10px 0;
+  padding-left: 0;
+  list-style: none;
 }
 
 .checklist li {
-  display: flex;
-  align-items: flex-start;
-  gap: var(--space-sm);
+  position: relative;
+  display: block;
+  margin: 6px 0;
+  padding-left: 26px;
   font-size: var(--font-size-sm);
-  line-height: 1.5;
+  line-height: 1.55;
   color: var(--color-text);
 }
 
 .checklist li::before {
-  content: '✔';
-  flex: 0 0 auto;
-  color: var(--color-success);
-  font-size: var(--font-size-sm);
-  margin-top: 2px;
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--color-success);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04) inset;
+}
+
+.checklist li::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  width: 5px;
+  height: 9px;
+  border: 2px solid var(--color-background);
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(45deg);
 }
 
 /* --------------------------------------------------------------------------
@@ -69,21 +95,27 @@
  * ------------------------------------------------------------------------ */
 
 .meta-card {
-  padding: var(--space-md);
+  margin-top: 12px;
+  padding: 14px;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
-  background: var(--color-surface);
+  background: linear-gradient(180deg, #fbf6ec 0%, #fffaf1 100%);
+  box-shadow: 0 8px 18px rgba(16, 18, 17, 0.06);
 }
 
 .meta-card-title {
-  margin-bottom: var(--space-xs);
+  margin-bottom: 4px;
   font-size: var(--font-size-sm);
-  font-weight: var(--font-weight-medium);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: lowercase;
 }
 
 .meta-card-value {
   font-size: var(--font-size-md);
-  font-weight: var(--font-weight-semibold);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.6;
 }
 
 /* --------------------------------------------------------------------------
@@ -93,14 +125,30 @@
 .icon-row {
   display: flex;
   justify-content: center;
-  gap: var(--space-md);
+  align-items: center;
+  gap: 12px;
 }
 
 .icon-row img,
 .icon-row svg {
   width: 24px;
   height: 24px;
-  opacity: 0.8;
+  opacity: 0.88;
+}
+
+.icon-row a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  transition:
+    transform 0.28s ease,
+    opacity 0.28s ease;
+}
+
+.icon-row a:hover {
+  transform: translateY(-1px);
+  opacity: 1;
 }
 
 /* --------------------------------------------------------------------------
@@ -110,7 +158,7 @@
 .divider {
   width: 100%;
   height: 1px;
-  margin: var(--space-md) 0;
+  margin: 12px 0;
   background: var(--color-border);
 }
 
@@ -135,9 +183,9 @@
  * ------------------------------------------------------------------------ */
 
 .helper-text {
-  font-size: var(--font-size-xs);
-  line-height: 1.4;
-  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--color-text);
 }
 
 /* --------------------------------------------------------------------------
@@ -145,15 +193,27 @@
  * ------------------------------------------------------------------------ */
 
 .step-media {
+  justify-self: start;
   width: 100%;
+  max-width: 220px;
   overflow: hidden;
-  border-radius: var(--radius-md);
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fcf7ee 0%, #fffaf3 100%);
+  box-shadow: 0 6px 16px rgba(16, 18, 17, 0.06);
 }
 
 .step-media img {
   display: block;
   width: 100%;
   height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  border-radius: 8px;
+  background: transparent;
+  transform: translateY(0);
+  will-change: transform;
 }
 
 /* --------------------------------------------------------------------------
@@ -173,5 +233,40 @@
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes zdk-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .step-media img {
+    animation: zdk-float 8s ease-in-out infinite;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Responsive
+ * ------------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .product-card {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .step-media {
+    justify-self: center;
+    max-width: 72%;
+    padding: 6px;
+    border-radius: 10px;
   }
 }
