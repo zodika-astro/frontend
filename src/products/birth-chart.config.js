@@ -1,20 +1,20 @@
 // src/products/birth-chart.config.js
 
 /* ============================================================================
- * ZODIKA • Birth Chart Config
+ * ZODIKA • Birth Chart Product Configuration
  * ----------------------------------------------------------------------------
  * Product-specific configuration for the Birth Chart form.
  *
  * Responsibilities
- * - Define product-specific settings outside core logic
- * - Centralize selectors, field mappings, endpoints, and timing values
- * - Keep product behavior configurable and reusable
+ * - Define product identity and locale
+ * - Define backend API endpoints
+ * - Define DOM selectors
+ * - Define form field names and hidden fields
+ * - Define error mapping and step keys
+ * - Define tracking and timeout settings
  * ========================================================================== */
 
-/**
- * Birth Chart form configuration.
- */
-export const birthChartConfig = {
+const birthChartConfig = {
   productKey: 'birth_chart',
   locale: 'pt-BR',
 
@@ -103,3 +103,5 @@ export const birthChartConfig = {
     usesGooglePlaces: true,
   },
 };
+
+export default birthChartConfig;
