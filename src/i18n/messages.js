@@ -3,28 +3,15 @@
 /* ============================================================================
  * ZODIKA • Messages
  * ----------------------------------------------------------------------------
- * Centralized dictionary for user-facing text.
+ * Centralized message dictionary and translation helper.
  *
  * Responsibilities
- * - Keep UI copy outside business logic
- * - Support multiple languages
- * - Provide a stable translation source for form modules
+ * - Store UI and validation messages
+ * - Provide a simple translation resolver
  * ========================================================================== */
 
-/**
- * Default message dictionary.
- *
- * The dictionary can be extended or overridden externally when needed.
- */
 export const messages = {
   'pt-BR': {
-    buttons: {
-      next: 'próximo',
-      back: 'voltar',
-      confirmAndPay: 'confirmar e pagar',
-      tryAgain: 'tentar novamente',
-    },
-
     errors: {
       invalidEmail: 'por favor, insira um e-mail válido.',
       invalidName: 'por favor, preencha seu nome completo.',
@@ -57,26 +44,19 @@ export const messages = {
   },
 
   'en-US': {
-    buttons: {
-      next: 'next',
-      back: 'back',
-      confirmAndPay: 'confirm and pay',
-      tryAgain: 'try again',
-    },
-
     errors: {
       invalidEmail: 'please enter a valid email address.',
       invalidName: 'please enter your full name.',
       invalidDate: 'please enter a valid date.',
-      dateTooEarly: 'the date cannot be earlier than 1700.',
-      dateInFuture: 'the date cannot be in the future.',
+      dateTooEarly: 'date cannot be earlier than 1700.',
+      dateInFuture: 'date cannot be in the future.',
       invalidTime: 'please enter a valid time.',
       invalidCity: 'please select a valid city from the list.',
       privacyRequired:
         'you must agree to the privacy policy to continue.',
       startSessionFailed:
-        'we could not start your session right now. please try again.',
-      checkoutUrlMissing: 'Payment URL not received.',
+        'we could not start your session. please try again.',
+      checkoutUrlMissing: 'payment URL not received.',
     },
 
     overlays: {
@@ -97,28 +77,29 @@ export const messages = {
 };
 
 /**
- * Creates a translator function for a given locale.
+ * Creates a translation function for a given locale.
  *
- * @param {object} messagesDict
+ * @param {object} dictionary
  * @param {string} locale
- * @returns {(path: string, fallback?: string) => string}
+ * @returns {(key: string, fallback?: string) => string}
  */
-export function createTranslator(messagesDict, locale = 'pt-BR') {
-  const dictionary =
-    messagesDict?.[locale] ||
-    messagesDict?.['pt-BR'] ||
-    {};
+export function createTranslator(dictionary, locale) {
+  const lang = dictionary?.[locale] || {};
 
-  return function t(path, fallback = '') {
-    if (!path) return fallback;
+  return function t(key, fallback = '') {
+    if (!key) return fallback;
 
-    const value = path
-      .split('.')
-      .reduce((acc, key) => {
-        if (acc && key in acc) return acc[key];
-        return undefined;
-      }, dictionary);
+    const parts = key.split('.');
+    let value = lang;
 
-    return value == null ? fallback : value;
+    for (const part of parts) {
+      if (value && typeof value === 'object' && part in value) {
+        value = value[part];
+      } else {
+        return fallback || key;
+      }
+    }
+
+    return typeof value === 'string' ? value : fallback || key;
   };
 }
