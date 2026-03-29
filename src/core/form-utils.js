@@ -3,18 +3,19 @@
 /* ============================================================================
  * ZODIKA • Form Utils
  * ----------------------------------------------------------------------------
- * Shared utility helpers for the universal product form app.
+ * Shared utility helpers used across the form application.
  *
  * Responsibilities
- * - Provide pure helper functions
- * - Avoid coupling with business logic or UI
- * - Support reuse across modules and products
+ * - Provide safe object merge helpers
+ * - Normalize user input values
+ * - Handle HTTP JSON requests with timeout support
+ * - Provide date and formatting helpers
  * ========================================================================== */
 
 /**
- * Returns true when a value is a plain object.
+ * Checks whether a value is a plain object.
  *
- * @param {*} value
+ * @param {unknown} value
  * @returns {boolean}
  */
 export function isPlainObject(value) {
@@ -22,11 +23,10 @@ export function isPlainObject(value) {
 }
 
 /**
- * Safely clones serializable data.
+ * Safely clones a serializable value.
  *
- * @template T
- * @param {T} value
- * @returns {T}
+ * @param {any} value
+ * @returns {any}
  */
 export function structuredCloneSafe(value) {
   try {
@@ -38,7 +38,6 @@ export function structuredCloneSafe(value) {
 
 /**
  * Deep-merges two objects.
- * Arrays and non-plain objects are replaced, not merged.
  *
  * @param {object} base
  * @param {object} override
@@ -66,7 +65,7 @@ export function deepMerge(base, override) {
 }
 
 /**
- * Converts a relative endpoint path into an absolute URL.
+ * Converts a relative path into an absolute URL using a base URL.
  *
  * @param {string} base
  * @param {string} path
@@ -81,28 +80,7 @@ export function toAbsoluteUrl(base, path) {
 }
 
 /**
- * Safely resolves a nested property from an object using dot notation.
- *
- * @param {object} obj
- * @param {string} path
- * @param {*} fallback
- * @returns {*}
- */
-export function getNestedValue(obj, path, fallback = undefined) {
-  if (!obj || !path) return fallback;
-
-  const value = String(path)
-    .split('.')
-    .reduce((acc, key) => {
-      if (acc && key in acc) return acc[key];
-      return undefined;
-    }, obj);
-
-  return value == null ? fallback : value;
-}
-
-/**
- * Returns the current local date in ISO format (YYYY-MM-DD).
+ * Returns today's date in local ISO format (YYYY-MM-DD).
  *
  * @returns {string}
  */
@@ -116,29 +94,33 @@ export function getLocalTodayISO() {
 }
 
 /**
- * Formats an ISO date string for UI display according to locale.
+ * Formats an ISO date string for display.
  *
  * @param {string} isoDate
  * @param {string} locale
  * @param {string} fallback
  * @returns {string}
  */
-export function formatDisplayDate(isoDate, locale = 'pt-BR', fallback = '') {
+export function formatDisplayDate(isoDate, locale = 'pt-BR', fallback = '(não informado)') {
   if (!isoDate || !/^\d{4}-\d{2}-\d{2}$/.test(isoDate)) {
     return fallback;
   }
 
   const [year, month, day] = isoDate.split('-');
-
-  if (locale === 'en-US') {
-    return `${month}/${day}/${year}`;
+  if (locale === 'pt-BR') {
+    return `${day}/${month}/${year}`;
   }
 
-  return `${day}/${month}/${year}`;
+  try {
+    const date = new Date(`${isoDate}T00:00:00`);
+    return new Intl.DateTimeFormat(locale).format(date);
+  } catch {
+    return `${day}/${month}/${year}`;
+  }
 }
 
 /**
- * Extracts a readable error message from a JSON response.
+ * Returns a backend error message from a JSON payload.
  *
  * @param {object|null} errorJson
  * @param {string} fallback
@@ -149,7 +131,7 @@ export function getJsonErrorMessage(errorJson, fallback) {
 }
 
 /**
- * Builds a normalized Error object from an HTTP response.
+ * Creates an HTTP error carrying status and payload.
  *
  * @param {Response} response
  * @param {object|null} errorJson
@@ -167,13 +149,13 @@ export function createHttpError(response, errorJson) {
 }
 
 /**
- * Sends a JSON POST request with timeout handling.
+ * Sends a JSON POST request with timeout support.
  *
  * @param {string} url
  * @param {object} payload
  * @param {number} timeoutMs
- * @param {object} [fetchOptions]
- * @returns {Promise<object|null>}
+ * @param {object} fetchOptions
+ * @returns {Promise<any>}
  */
 export async function postJson(url, payload, timeoutMs = 15000, fetchOptions = {}) {
   const controller = new AbortController();
@@ -211,25 +193,7 @@ export async function postJson(url, payload, timeoutMs = 15000, fetchOptions = {
 }
 
 /**
- * Creates a debounced function wrapper.
- *
- * @param {Function} fn
- * @param {number} waitMs
- * @returns {Function}
- */
-export function debounce(fn, waitMs) {
-  let timeoutId = null;
-
-  return function debounced(...args) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => {
-      fn.apply(this, args);
-    }, waitMs);
-  };
-}
-
-/**
- * Normalizes an email string.
+ * Normalizes an email value.
  *
  * @param {string} value
  * @returns {string}
@@ -239,7 +203,7 @@ export function normalizeEmail(value) {
 }
 
 /**
- * Normalizes a personal name.
+ * Normalizes a person name value.
  *
  * @param {string} value
  * @returns {string}
@@ -252,7 +216,7 @@ export function normalizePersonName(value) {
 }
 
 /**
- * Validates a time string in HH:MM format.
+ * Validates a HH:MM time string.
  *
  * @param {string} value
  * @returns {boolean}
@@ -260,7 +224,9 @@ export function normalizePersonName(value) {
 export function isValidTimeString(value) {
   const normalized = String(value || '');
 
-  if (!/^\d{2}:\d{2}$/.test(normalized)) return false;
+  if (!/^\d{2}:\d{2}$/.test(normalized)) {
+    return false;
+  }
 
   const [hours, minutes] = normalized.split(':').map(Number);
 
@@ -275,7 +241,7 @@ export function isValidTimeString(value) {
 }
 
 /**
- * Checks whether an error payload represents an inactive session.
+ * Checks whether the backend payload represents an inactive session error.
  *
  * @param {object|null} errorJson
  * @param {string} inactiveCode
@@ -287,7 +253,7 @@ export function isSessionInactiveErrorPayload(errorJson, inactiveCode) {
 }
 
 /**
- * Clamps a value between a minimum and maximum.
+ * Clamps a number between a minimum and maximum value.
  *
  * @param {number} value
  * @param {number} min
