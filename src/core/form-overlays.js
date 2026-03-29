@@ -3,13 +3,13 @@
 /* ============================================================================
  * ZODIKA • Form Overlays
  * ----------------------------------------------------------------------------
- * Overlay open/close helpers and focus management for the universal product
- * form app.
+ * Overlay management for loading, error, and session states.
  *
  * Responsibilities
- * - Control loading and error overlays
- * - Manage focus when overlays open and close
- * - Keep overlay behavior isolated from submit and tracking logic
+ * - Open and close overlay dialogs
+ * - Trap focus inside overlays for accessibility
+ * - Restore focus after closing overlays
+ * - Handle session expiration messaging
  * ========================================================================== */
 
 /**
@@ -17,7 +17,7 @@
  *
  * @param {HTMLElement|null} rootElement
  */
-export function focusFirstInteractive(rootElement) {
+function focusFirstInteractive(rootElement) {
   if (!rootElement) return;
 
   const selectors = [
@@ -39,7 +39,7 @@ export function focusFirstInteractive(rootElement) {
 }
 
 /**
- * Opens an overlay and traps keyboard focus inside it.
+ * Opens an overlay and traps focus inside it.
  *
  * @param {object} params
  * @param {HTMLElement|null} params.overlayElement
@@ -49,6 +49,7 @@ export function openOverlay({ overlayElement, state }) {
   if (!overlayElement || !state?.ui) return;
 
   state.ui.lastFocusedBeforeOverlay = document.activeElement;
+
   overlayElement.style.display = 'flex';
 
   function trapTabKey(event) {
@@ -84,7 +85,7 @@ export function openOverlay({ overlayElement, state }) {
 }
 
 /**
- * Closes an overlay and restores focus to the previously focused element.
+ * Closes an overlay and restores focus.
  *
  * @param {object} params
  * @param {HTMLElement|null} params.overlayElement
@@ -96,18 +97,22 @@ export function closeOverlay({ overlayElement, state }) {
   overlayElement.style.display = 'none';
 
   if (overlayElement._zdkTrapHandler) {
-    overlayElement.removeEventListener('keydown', overlayElement._zdkTrapHandler);
+    overlayElement.removeEventListener(
+      'keydown',
+      overlayElement._zdkTrapHandler
+    );
     overlayElement._zdkTrapHandler = null;
   }
 
   const previousFocus = state?.ui?.lastFocusedBeforeOverlay;
+
   if (previousFocus && typeof previousFocus.focus === 'function') {
     previousFocus.focus();
   }
 }
 
 /**
- * Updates the error overlay content for an inactive session state.
+ * Sets session expired content in the error overlay.
  *
  * @param {object} params
  * @param {HTMLElement|null} params.errorOverlay
@@ -135,8 +140,7 @@ export function setSessionExpiredOverlayContent({ errorOverlay, t }) {
 }
 
 /**
- * Closes the loading overlay, updates the error overlay content for an inactive
- * session, and opens the error overlay.
+ * Shows the session expired overlay.
  *
  * @param {object} params
  * @param {HTMLElement|null} params.spinnerOverlay
@@ -151,6 +155,8 @@ export function showSessionExpiredOverlay({
   t,
 }) {
   closeOverlay({ overlayElement: spinnerOverlay, state });
+
   setSessionExpiredOverlayContent({ errorOverlay, t });
+
   openOverlay({ overlayElement: errorOverlay, state });
 }
