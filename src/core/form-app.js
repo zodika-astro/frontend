@@ -547,15 +547,15 @@ export function createFormApp(productConfig) {
       if (action === 'back') prevStep();
       if (action === 'reset') resetForm();
     });
-    
-      if (dom.privacyCheckbox) {
-          dom.privacyCheckbox.addEventListener('change', () => {
-      if (dom.privacyCheckbox.checked) 
-              {hideError(config.errorIds.privacy);
+
+    if (dom.privacyCheckbox) {
+      dom.privacyCheckbox.addEventListener('change', () => {
+        if (dom.privacyCheckbox.checked) {
+          hideError(config.errorIds.privacy);
           dom.privacyCheckbox.removeAttribute('aria-invalid');
-              }
-          });
-      }
+        }
+      });
+    }
 
     dom.form.addEventListener('keydown', (event) => {
       if (event.key !== 'Enter') return;
