@@ -321,6 +321,25 @@
   transform: none;
 }
 
+.form-btn.is-loading {
+  position: relative;
+  pointer-events: none;
+}
+
+.form-btn.is-loading::after {
+  content: '';
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-left: 8px;
+  border: 1.5px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  vertical-align: -1px;
+  animation: zdk-button-spin 0.65s linear infinite;
+  opacity: 0.78;
+}
+
 /* --------------------------------------------------------------------------
  * Confirmation
  * ------------------------------------------------------------------------ */
