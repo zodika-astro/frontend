@@ -175,6 +175,20 @@ export function createFormApp(productConfig) {
     dom.confirmationSummary.replaceChildren(list);
   }
 
+  function getCurrentNextButton() {
+    const currentStep = getCurrentStepElement(dom, state);
+    return currentStep?.querySelector('[data-action="next"]') || null;
+  }
+
+  function setCurrentNextButtonLoading(isLoading) {
+    const button = getCurrentNextButton();
+    if (!button) return;
+
+    button.disabled = isLoading;
+    button.classList.toggle('is-loading', isLoading);
+    button.setAttribute('aria-busy', isLoading ? 'true' : 'false');
+  }
+
   function resetForm() {
     dom.form.reset();
     resetFormState(state);
@@ -359,6 +373,13 @@ export function createFormApp(productConfig) {
       const nextIndex = getNextStepIndex(state);
 
       if (!state.session.token && previousStepIndex === 0) {
+        let loadingTimer = null;
+
+        try {
+          loadingTimer = window.setTimeout(() => {
+            setCurrentNextButtonLoading(true);
+          }, 180);
+        
         await startFormSession({
           state,
           config,
@@ -366,7 +387,13 @@ export function createFormApp(productConfig) {
           storageKeys,
           form: dom.form,
         });
-
+        } finally {
+          if (loadingTimer) {
+            window.clearTimeout(loadingTimer);
+          }
+          setCurrentNextButtonLoading(false);
+          }
+        
         if (nextIndex === dom.steps.length - 1) {
           fillConfirmationSummary();
         }
