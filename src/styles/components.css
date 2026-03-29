@@ -247,6 +247,12 @@
   }
 }
 
+@keyframes zdk-button-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .step-media img {
     animation: zdk-float 8s ease-in-out infinite;
