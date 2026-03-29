@@ -291,6 +291,7 @@ export async function startFormSession({
   }
 
   state.session.token = token;
+  state.session.isStarted = true;
   setSessionToken(storageKeys, token);
 
   return true;
