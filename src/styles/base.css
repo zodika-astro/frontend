@@ -27,6 +27,8 @@
 
   --color-success: #6fae8d;
   --color-error: #c05a5a;
+  
+  --color-surface: #fbf6ec;
 
   /* Typography */
   --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI',
