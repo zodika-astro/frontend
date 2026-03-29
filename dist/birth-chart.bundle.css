@@ -1,0 +1,1067 @@
+/* src/styles/base.css */
+
+/* ============================================================================
+ * ZODIKA • Base Styles
+ * ----------------------------------------------------------------------------
+ * Design tokens, resets and global styles.
+ *
+ * Responsibilities
+ * - Define color palette and typography
+ * - Provide spacing and radius tokens
+ * - Normalize base elements
+ * ========================================================================== */
+
+/* --------------------------------------------------------------------------
+ * Design Tokens
+ * ------------------------------------------------------------------------ */
+
+:root {
+  /* Colors (Zodika identity) */
+  --color-background: #fffaf3;
+  --color-text: #48252f;
+  --color-text-muted: #8c7a74;
+  --color-border: #e6ddd2;
+
+  --color-primary: #48252f;
+  --color-primary-light: #7a4a58;
+
+  --color-success: #6fae8d;
+  --color-error: #c05a5a;
+  
+  --color-surface: #fbf6ec;
+
+  /* Typography */
+  --font-family-base: -apple-system, BlinkMacSystemFont, 'Segoe UI',
+    Roboto, Helvetica, Arial, sans-serif;
+
+  --font-size-xs: 12px;
+  --font-size-sm: 13px;
+  --font-size-md: 15px;
+  --font-size-lg: 18px;
+
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+
+  /* Spacing */
+  --space-xs: 6px;
+  --space-sm: 10px;
+  --space-md: 16px;
+  --space-lg: 24px;
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 14px;
+  --radius-lg: 22px;
+
+  /* Inputs */
+  --input-height: 52px;
+
+  /* Shadows */
+  --shadow-md: 0 10px 30px rgba(16, 18, 17, 0.08);
+}
+
+/* --------------------------------------------------------------------------
+ * Reset
+ * ------------------------------------------------------------------------ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-md);
+  line-height: 1.5;
+  color: var(--color-text);
+  background: var(--color-background);
+}
+
+/* --------------------------------------------------------------------------
+ * Typography
+ * ------------------------------------------------------------------------ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-weight: var(--font-weight-semibold);
+}
+
+p {
+  margin: 0;
+}
+
+/* --------------------------------------------------------------------------
+ * Links
+ * ------------------------------------------------------------------------ */
+
+a {
+  color: var(--color-text);
+  text-decoration: underline;
+}
+
+a:hover {
+  opacity: 0.85;
+}
+
+/* --------------------------------------------------------------------------
+ * Lists
+ * ------------------------------------------------------------------------ */
+
+ul,
+ol {
+  margin: 0;
+  padding-left: 18px;
+}
+
+/* --------------------------------------------------------------------------
+ * Buttons
+ * ------------------------------------------------------------------------ */
+
+button {
+  font-family: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+/* --------------------------------------------------------------------------
+ * Inputs
+ * ------------------------------------------------------------------------ */
+
+input,
+select,
+textarea {
+  font-family: inherit;
+  font-size: inherit;
+  outline: none;
+}
+
+/* Remove iOS default styles */
+input[type='date'],
+input[type='time'] {
+  -webkit-appearance: none;
+}
+
+/* --------------------------------------------------------------------------
+ * Accessibility
+ * ------------------------------------------------------------------------ */
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  border: 0;
+  clip: rect(0, 0, 0, 0);
+}
+
+/* --------------------------------------------------------------------------
+ * Utility
+ * ------------------------------------------------------------------------ */
+
+.hidden {
+  display: none !important;
+}
+
+
+/* src/styles/form.css */
+
+/* ============================================================================
+ * ZODIKA • Form Styles
+ * ----------------------------------------------------------------------------
+ * Core layout and form-specific UI for reusable product forms.
+ *
+ * Responsibilities
+ * - Define form layout and structure
+ * - Style steps, inputs, buttons, and progress indicators
+ * - Provide reusable UI across products
+ * ========================================================================== */
+
+/* --------------------------------------------------------------------------
+ * App Shell
+ * ------------------------------------------------------------------------ */
+
+.form-app {
+  min-height: 100dvh;
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.form-shell {
+  padding: 16px;
+  padding-left: max(16px, env(safe-area-inset-left));
+  padding-right: max(16px, env(safe-area-inset-right));
+}
+
+.form-header {
+  text-align: center;
+  padding: 24px 16px 8px;
+  padding-top: calc(24px + env(safe-area-inset-top));
+}
+
+.form-logo {
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--color-text);
+  text-transform: lowercase;
+}
+
+.form-subtitle {
+  margin-top: 4px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  text-transform: lowercase;
+}
+
+.form-container {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+/* --------------------------------------------------------------------------
+ * Form Card
+ * ------------------------------------------------------------------------ */
+
+.form {
+  position: relative;
+  overflow: hidden;
+  padding: clamp(22px, 4vw, 40px);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 251, 244, 0.92);
+  box-shadow: var(--shadow-md);
+}
+
+/* --------------------------------------------------------------------------
+ * Progress
+ * ------------------------------------------------------------------------ */
+
+.progress-container {
+  margin-bottom: 18px;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f4ebdd, #fff7ec);
+}
+
+.progress-indicator {
+  display: flex;
+  gap: 6px;
+  height: 100%;
+  padding: 2px;
+}
+
+.progress-step {
+  position: relative;
+  flex: 1;
+  overflow: hidden;
+  border-radius: 999px;
+}
+
+.progress-step::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-text), #2b1720);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.28s ease;
+}
+
+.progress-step.active::before {
+  transform: scaleX(1);
+}
+
+.progress-status {
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+ * Steps
+ * ------------------------------------------------------------------------ */
+
+.form-step {
+  display: none;
+  flex-direction: column;
+  gap: var(--space-md);
+  min-height: clamp(320px, 44vh, 520px);
+  animation: fade-in 0.35s ease;
+}
+
+.form-step.active {
+  display: flex;
+}
+
+.form-step[aria-hidden='true'] {
+  display: none !important;
+}
+
+.step-head {
+  min-height: clamp(76px, 12vh, 120px);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.step-title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(16px, 2.1vw, 18px);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.3;
+  color: var(--color-text);
+  text-transform: lowercase;
+}
+
+.step-count {
+  display: inline-block;
+  min-width: 1.5ch;
+  margin-right: 0;
+  color: var(--color-text-muted);
+  font-weight: 600;
+  text-align: right;
+}
+
+.meta-row {
+  min-height: 22px;
+  display: flex;
+  align-items: center;
+}
+
+.form-note {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-text-muted);
+  text-transform: lowercase;
+}
+
+.form-note.placeholder {
+  opacity: 0;
+  visibility: visible;
+}
+
+/* --------------------------------------------------------------------------
+ * Inputs
+ * ------------------------------------------------------------------------ */
+
+.input-container {
+  position: relative;
+}
+
+.form-input,
+.form-select,
+.form-select-btn {
+  width: 100%;
+  min-height: var(--input-height);
+  height: var(--input-height);
+  padding: 0 var(--space-md);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  color: var(--color-text);
+  transition:
+    border-color 0.28s ease,
+    box-shadow 0.28s ease,
+    background-color 0.28s ease;
+}
+
+.form-input::placeholder {
+  color: #9c9283;
+}
+
+.form-input:focus,
+.form-select:focus,
+.form-select-btn:focus-visible {
+  border-color: var(--color-text);
+  box-shadow: 0 0 0 4px rgba(72, 37, 47, 0.08);
+  background: var(--color-background);
+}
+
+.form-input.invalid,
+.form-select.invalid,
+.form-select[aria-invalid='true'],
+.form-select-btn[aria-invalid='true'] {
+  border-color: var(--color-error);
+  background: #fff4f4;
+}
+
+.form-time {
+  appearance: auto;
+  -webkit-appearance: auto;
+}
+
+.input-icon {
+  position: absolute;
+  top: 50%;
+  right: var(--space-md);
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+ * Errors
+ * ------------------------------------------------------------------------ */
+
+.error {
+  display: none;
+  margin-top: var(--space-sm);
+  font-size: var(--font-size-sm);
+  line-height: 1.4;
+  color: var(--color-error);
+}
+
+.error[hidden] {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+ * Buttons
+ * ------------------------------------------------------------------------ */
+
+.btn-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  margin-top: auto;
+  padding-top: 10px;
+}
+
+.form-btn {
+  width: 100%;
+  min-height: 52px;
+  padding: 14px 18px;
+  border-radius: var(--radius-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-medium);
+  transition:
+    transform 0.28s ease,
+    box-shadow 0.28s ease,
+    background-color 0.28s ease,
+    border-color 0.28s ease,
+    color 0.28s ease;
+}
+
+.form-btn.next {
+  background: var(--color-text);
+  color: var(--color-background);
+  box-shadow: 0 10px 24px rgba(72, 37, 47, 0.18);
+}
+
+.form-btn.next:hover {
+  transform: translateY(-1.5px);
+  background: linear-gradient(180deg, var(--color-text), #3a1d27);
+}
+
+.form-btn.back {
+  border: 1px solid var(--color-border);
+  background: var(--color-background);
+  color: var(--color-text);
+}
+
+.form-btn.back:hover {
+  box-shadow: 0 8px 18px rgba(16, 18, 17, 0.06);
+  background: var(--color-background);
+}
+
+.form-btn:disabled,
+.form-btn[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* --------------------------------------------------------------------------
+ * Confirmation
+ * ------------------------------------------------------------------------ */
+
+.confirmation-summary,
+#confirmation-summary {
+  padding: 14px;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 251, 244, 0.7);
+  line-height: 1.65;
+}
+
+.confirmation-summary ul,
+#confirmation-summary ul {
+  display: grid;
+  gap: var(--space-sm);
+  padding-left: 0;
+  list-style: none;
+}
+
+/* --------------------------------------------------------------------------
+ * Consent
+ * ------------------------------------------------------------------------ */
+
+.form-consent {
+  margin-top: var(--space-md);
+}
+
+.form-consent-label {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-sm);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  color: var(--color-text);
+}
+
+.form-consent-label input[type='checkbox'] {
+  margin-top: 2px;
+  accent-color: var(--color-text);
+}
+
+/* --------------------------------------------------------------------------
+ * Utility
+ * ------------------------------------------------------------------------ */
+
+.is-hidden {
+  display: none !important;
+}
+
+/* --------------------------------------------------------------------------
+ * Responsive
+ * ------------------------------------------------------------------------ */
+
+@media (max-width: 768px) {
+  .form {
+    padding: 20px;
+  }
+
+  .btn-group {
+    flex-direction: column-reverse;
+  }
+
+  .step-title {
+    font-size: var(--font-size-md);
+  }
+}
+
+@media (max-width: 480px) {
+  .form-header {
+    padding-top: calc(var(--space-lg) + env(safe-area-inset-top));
+  }
+
+  .form-shell {
+    padding: var(--space-sm);
+    padding-left: max(var(--space-sm), env(safe-area-inset-left));
+    padding-right: max(var(--space-sm), env(safe-area-inset-right));
+  }
+
+  .form {
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+  }
+
+  .form-step {
+    min-height: 280px;
+  }
+}
+
+
+/* src/styles/components.css */
+
+/* ============================================================================
+ * ZODIKA • Components Styles
+ * ----------------------------------------------------------------------------
+ * Reusable UI components that are not strictly part of the core form layout.
+ *
+ * Responsibilities
+ * - Define reusable presentation components
+ * - Keep visual patterns isolated from structural form styles
+ * - Support reuse across multiple product forms
+ * ========================================================================== */
+
+/* --------------------------------------------------------------------------
+ * Product Card
+ * ------------------------------------------------------------------------ */
+
+.product-card {
+  display: grid;
+  grid-template-columns: 1fr minmax(140px, 220px);
+  gap: 18px;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: rgba(255, 251, 244, 0.55);
+}
+
+.product-card-title {
+  margin: 0 0 8px 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--color-text);
+  text-align: left;
+  text-transform: lowercase;
+}
+
+.product-card-description {
+  font-size: var(--font-size-sm);
+  line-height: 1.5;
+  text-align: left;
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+ * Checklist
+ * ------------------------------------------------------------------------ */
+
+.checklist {
+  display: grid;
+  gap: 0;
+  margin: 0 0 10px 0;
+  padding-left: 0;
+  list-style: none;
+}
+
+.checklist li {
+  position: relative;
+  display: block;
+  margin: 6px 0;
+  padding-left: 26px;
+  font-size: var(--font-size-sm);
+  line-height: 1.55;
+  color: var(--color-text);
+}
+
+.checklist li::before {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 999px;
+  background: var(--color-success);
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.04) inset;
+}
+
+.checklist li::after {
+  content: '';
+  position: absolute;
+  top: 4px;
+  left: 6px;
+  width: 5px;
+  height: 9px;
+  border: 2px solid var(--color-background);
+  border-top: 0;
+  border-left: 0;
+  transform: rotate(45deg);
+}
+
+/* --------------------------------------------------------------------------
+ * Meta Card
+ * ------------------------------------------------------------------------ */
+
+.meta-card {
+  margin-top: 12px;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, #fbf6ec 0%, #fffaf1 100%);
+  box-shadow: 0 8px 18px rgba(16, 18, 17, 0.06);
+}
+
+.meta-card-title {
+  margin-bottom: 4px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: lowercase;
+}
+
+.meta-card-value {
+  font-size: var(--font-size-md);
+  font-weight: 600;
+  color: var(--color-text);
+  line-height: 1.6;
+}
+
+/* --------------------------------------------------------------------------
+ * Social Icons Row
+ * ------------------------------------------------------------------------ */
+
+.icon-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+}
+
+.icon-row img,
+.icon-row svg {
+  width: 24px;
+  height: 24px;
+  opacity: 0.88;
+}
+
+.icon-row a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text);
+  transition:
+    transform 0.28s ease,
+    opacity 0.28s ease;
+}
+
+.icon-row a:hover {
+  transform: translateY(-1px);
+  opacity: 1;
+}
+
+/* --------------------------------------------------------------------------
+ * Divider
+ * ------------------------------------------------------------------------ */
+
+.divider {
+  width: 100%;
+  height: 1px;
+  margin: 12px 0;
+  background: var(--color-border);
+}
+
+/* --------------------------------------------------------------------------
+ * Badge
+ * ------------------------------------------------------------------------ */
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  background: var(--color-primary-light);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------------
+ * Helper Text
+ * ------------------------------------------------------------------------ */
+
+.helper-text {
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--color-text);
+}
+
+/* --------------------------------------------------------------------------
+ * Step Media
+ * ------------------------------------------------------------------------ */
+
+.step-media {
+  justify-self: start;
+  width: 100%;
+  max-width: 220px;
+  overflow: hidden;
+  padding: 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #fcf7ee 0%, #fffaf3 100%);
+  box-shadow: 0 6px 16px rgba(16, 18, 17, 0.06);
+}
+
+.step-media img {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  object-fit: contain;
+  border-radius: 8px;
+  background: transparent;
+  transform: translateY(0);
+  will-change: transform;
+}
+
+/* --------------------------------------------------------------------------
+ * Motion
+ * ------------------------------------------------------------------------ */
+
+.fade-in {
+  animation: fade-in 0.25s ease;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zdk-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .step-media img {
+    animation: zdk-float 8s ease-in-out infinite;
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Responsive
+ * ------------------------------------------------------------------------ */
+
+@media (max-width: 640px) {
+  .product-card {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .step-media {
+    justify-self: center;
+    max-width: 72%;
+    padding: 6px;
+    border-radius: 10px;
+  }
+}
+
+
+/* src/styles/overlays.css */
+
+/* ============================================================================
+ * ZODIKA • Overlay Styles
+ * ----------------------------------------------------------------------------
+ * Overlay system for loading, error and session states.
+ *
+ * Responsibilities
+ * - Provide full-screen overlay layout
+ * - Style spinner and modal cards
+ * - Ensure visual consistency with brand (plum/ivory)
+ * ========================================================================== */
+
+/* --------------------------------------------------------------------------
+ * Overlay Base
+ * ------------------------------------------------------------------------ */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+
+  background: rgba(16, 18, 17, 0.42);
+  backdrop-filter: blur(6px);
+}
+
+/* --------------------------------------------------------------------------
+ * Overlay Card
+ * ------------------------------------------------------------------------ */
+
+.overlay-card {
+  width: 100%;
+  max-width: 420px;
+  padding: 26px 22px;
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+
+  background: linear-gradient(180deg, #fffaf3 0%, #fbf6ec 100%);
+  box-shadow: 0 20px 50px rgba(16, 18, 17, 0.18);
+
+  text-align: center;
+  animation: overlay-fade-in 0.28s ease;
+}
+
+/* --------------------------------------------------------------------------
+ * Titles & Text
+ * ------------------------------------------------------------------------ */
+
+.overlay-error-title {
+  margin: 12px 0 8px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--color-text);
+  text-transform: lowercase;
+}
+
+.overlay-error-text,
+.overlay-loading-text {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  color: var(--color-text-muted);
+  text-transform: lowercase;
+}
+
+/* --------------------------------------------------------------------------
+ * Spinner
+ * ------------------------------------------------------------------------ */
+
+.spinner {
+  width: 44px;
+  height: 44px;
+  margin: 0 auto 10px;
+
+  border-radius: 50%;
+  border: 3px solid rgba(72, 37, 47, 0.15);
+  border-top-color: var(--color-text);
+
+  animation: spin 0.9s linear infinite;
+}
+
+/* --------------------------------------------------------------------------
+ * Actions
+ * ------------------------------------------------------------------------ */
+
+.overlay-actions {
+  margin-top: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+/* --------------------------------------------------------------------------
+ * Animations
+ * ------------------------------------------------------------------------ */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes overlay-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* --------------------------------------------------------------------------
+ * Responsive
+ * ------------------------------------------------------------------------ */
+
+@media (max-width: 480px) {
+  .overlay-card {
+    padding: 22px 18px;
+    border-radius: var(--radius-md);
+  }
+
+  .overlay-error-title {
+    font-size: 16px;
+  }
+}
+
+
+/* src/styles/integrations.css */
+
+/* ============================================================================
+ * ZODIKA • Integration Styles
+ * ----------------------------------------------------------------------------
+ * Styles for third-party integrations.
+ *
+ * Responsibilities
+ * - Isolate vendor-specific overrides
+ * - Keep external UI aligned with the product design system
+ * - Prevent leakage into core form styles
+ * ========================================================================== */
+
+/* --------------------------------------------------------------------------
+ * Google Places Autocomplete
+ * ------------------------------------------------------------------------ */
+
+.pac-container {
+  z-index: 99999 !important;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-background);
+  box-shadow: var(--shadow-md);
+  font-family: var(--font-family-base);
+}
+
+.pac-item {
+  padding: var(--space-sm) var(--space-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.pac-item:hover,
+.pac-item-selected {
+  background: var(--color-surface);
+}
+
+.pac-item-query {
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+.pac-item span:not(.pac-item-query) {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.pac-logo::after {
+  margin: var(--space-xs);
+}
+
+body > .pac-container {
+  position: absolute !important;
+}
+
+@media (max-width: 768px) {
+  .pac-container {
+    font-size: var(--font-size-md);
+  }
+
+  .pac-item {
+    padding: var(--space-md);
+  }
+}
