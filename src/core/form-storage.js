@@ -3,16 +3,16 @@
 /* ============================================================================
  * ZODIKA • Form Storage
  * ----------------------------------------------------------------------------
- * SessionStorage helpers for the universal product form app.
+ * sessionStorage helpers for form session and draft persistence.
  *
  * Responsibilities
- * - Isolate browser storage concerns
- * - Namespace keys by product
- * - Keep storage access safe and resilient
+ * - Persist session token across page reloads
+ * - Store pending tracking updates for retry
+ * - Provide safe read/write wrappers
  * ========================================================================== */
 
 /**
- * Builds namespaced storage keys for the current product.
+ * Returns storage keys scoped by product.
  *
  * @param {object} config
  * @returns {{sessionToken: string, pendingUpdate: string}}
@@ -66,7 +66,7 @@ export function clearSessionToken(storageKeys) {
 }
 
 /**
- * Reads the pending update payload from sessionStorage.
+ * Reads pending update payload from sessionStorage.
  *
  * @param {object} storageKeys
  * @returns {object|null}
@@ -83,7 +83,7 @@ export function getPendingUpdate(storageKeys) {
 }
 
 /**
- * Stores a pending update payload in sessionStorage.
+ * Stores pending update payload in sessionStorage.
  *
  * @param {object} storageKeys
  * @param {object|null} payload
@@ -100,7 +100,7 @@ export function setPendingUpdate(storageKeys, payload) {
 }
 
 /**
- * Removes the pending update payload from sessionStorage.
+ * Removes pending update payload from sessionStorage.
  *
  * @param {object} storageKeys
  */
@@ -111,7 +111,7 @@ export function clearPendingUpdate(storageKeys) {
 }
 
 /**
- * Removes all storage entries related to the current form instance.
+ * Clears all form-related storage keys.
  *
  * @param {object} storageKeys
  */
