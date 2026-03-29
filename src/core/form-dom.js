@@ -3,17 +3,16 @@
 /* ============================================================================
  * ZODIKA • Form DOM
  * ----------------------------------------------------------------------------
- * DOM querying and element resolution helpers for the universal product form
- * app.
+ * DOM resolution and helpers for form elements.
  *
  * Responsibilities
- * - Centralize DOM lookup logic
- * - Provide consistent access to form-related elements
- * - Reduce selector duplication across modules
+ * - Resolve DOM references using selectors
+ * - Provide safe access helpers for inputs and elements
+ * - Centralize DOM querying logic
  * ========================================================================== */
 
 /**
- * Resolves the DOM elements required by the form app.
+ * Resolves all required DOM elements based on selectors.
  *
  * @param {object} selectors
  * @returns {object}
@@ -26,103 +25,75 @@ export function resolveDom(selectors) {
     appRoot: document.querySelector(selectors.appRoot),
     form,
     steps: Array.from(formScope.querySelectorAll(selectors.steps)),
-    progressSteps: Array.from(document.querySelectorAll(selectors.progressSteps)),
+    progressSteps: Array.from(
+      document.querySelectorAll(selectors.progressSteps)
+    ),
     spinnerOverlay: document.querySelector(selectors.spinnerOverlay),
     errorOverlay: document.querySelector(selectors.errorOverlay),
     cityInput: document.querySelector(selectors.cityInput),
     privacyCheckbox: document.querySelector(selectors.privacyCheckbox),
-    confirmationSummary: document.querySelector(selectors.confirmationSummary),
+    confirmationSummary: document.querySelector(
+      selectors.confirmationSummary
+    ),
   };
 }
 
 /**
- * Returns true when the minimum required DOM structure exists.
+ * Checks if the minimum required DOM structure is present.
  *
  * @param {object} dom
  * @returns {boolean}
  */
 export function hasRequiredDom(dom) {
-  return Boolean(dom?.form && Array.isArray(dom?.steps) && dom.steps.length > 0);
+  return Boolean(
+    dom?.form &&
+      Array.isArray(dom?.steps) &&
+      dom.steps.length > 0
+  );
 }
 
 /**
- * Returns a named input inside the form.
+ * Returns an input element by its name attribute.
  *
- * @param {HTMLFormElement|null} form
- * @param {string} fieldName
+ * @param {HTMLFormElement} form
+ * @param {string} name
  * @returns {HTMLInputElement|null}
  */
-export function getNamedInput(form, fieldName) {
-  if (!form || !fieldName) return null;
-  return form.querySelector(`input[name="${fieldName}"]`);
+export function getNamedInput(form, name) {
+  if (!form || !name) return null;
+  return form.querySelector(`[name="${name}"]`);
 }
 
 /**
- * Returns a named select inside the form.
+ * Sets the value of an element by ID.
  *
- * @param {HTMLFormElement|null} form
- * @param {string} fieldName
- * @returns {HTMLSelectElement|null}
- */
-export function getNamedSelect(form, fieldName) {
-  if (!form || !fieldName) return null;
-  return form.querySelector(`select[name="${fieldName}"]`);
-}
-
-/**
- * Returns any named field inside the form.
- *
- * @param {HTMLFormElement|null} form
- * @param {string} fieldName
- * @returns {HTMLElement|null}
- */
-export function getNamedField(form, fieldName) {
-  if (!form || !fieldName) return null;
-  return form.querySelector(`[name="${fieldName}"]`);
-}
-
-/**
- * Returns an element by ID safely.
- *
- * @param {string} elementId
- * @returns {HTMLElement|null}
- */
-export function getElementByIdSafe(elementId) {
-  if (!elementId) return null;
-  return document.getElementById(elementId);
-}
-
-/**
- * Sets the value of an element identified by ID if it exists.
- *
- * @param {string} elementId
+ * @param {string} id
  * @param {string} value
  */
-export function setElementValueById(elementId, value) {
-  const element = getElementByIdSafe(elementId);
-  if (element) {
-    element.value = value;
-  }
+export function setElementValueById(id, value) {
+  if (!id) return;
+
+  const element = document.getElementById(id);
+  if (!element) return;
+
+  element.value = value ?? '';
 }
 
 /**
- * Clears a list of element values by ID.
+ * Clears values of multiple elements by ID.
  *
- * @param {string[]} elementIds
+ * @param {string[]} ids
  */
-export function clearElementValuesById(elementIds) {
-  if (!Array.isArray(elementIds)) return;
+export function clearElementValuesById(ids) {
+  if (!Array.isArray(ids)) return;
 
-  elementIds.forEach((elementId) => {
-    const element = getElementByIdSafe(elementId);
-    if (element) {
-      element.value = '';
-    }
+  ids.forEach((id) => {
+    setElementValueById(id, '');
   });
 }
 
 /**
- * Returns all hidden place-related field IDs from config.
+ * Returns the list of hidden field IDs used for place data.
  *
  * @param {object} config
  * @returns {string[]}
