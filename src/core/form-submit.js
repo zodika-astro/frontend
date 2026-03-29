@@ -3,21 +3,18 @@
 /* ============================================================================
  * ZODIKA • Form Submit
  * ----------------------------------------------------------------------------
- * Checkout payload creation and submit helpers for the universal product form
- * app.
+ * Checkout payload builder and submission helpers.
  *
  * Responsibilities
- * - Build checkout payload from current form state
- * - Submit data to the product checkout endpoint
- * - Handle redirect to payment flow
+ * - Build checkout payload preserving backend contract
+ * - Submit checkout request
+ * - Handle redirect logic
  * ========================================================================== */
 
 import { postJson } from './form-utils.js';
 
 /**
- * Builds the checkout payload from the current form values.
- *
- * The payload structure must match the backend expectations exactly.
+ * Builds the checkout payload using the current form data.
  *
  * @param {HTMLFormElement} form
  * @param {object} state
@@ -29,7 +26,9 @@ export function buildCheckoutPayload(form, state, config) {
   const payload = Object.fromEntries(formData.entries());
 
   payload.birth_place =
-    state?.city?.selectedDisplay || payload.birth_place || '';
+    state?.city?.selectedDisplay ||
+    payload.birth_place ||
+    '';
 
   payload.product_type = config.tracking.formType;
 
@@ -37,20 +36,21 @@ export function buildCheckoutPayload(form, state, config) {
   payload.privacy_agreed = true;
   payload.privacy_policy = 'on';
 
-  payload.form_session_token = state?.session?.token || null;
+  payload.form_session_token =
+    state?.session?.token || null;
 
   return payload;
 }
 
 /**
- * Sends the checkout request to the configured endpoint.
+ * Sends the checkout request to the backend.
  *
  * @param {object} params
  * @param {HTMLFormElement} params.form
  * @param {object} params.state
  * @param {object} params.config
  * @param {object} params.apiUrls
- * @returns {Promise<object|null>}
+ * @returns {Promise<object>}
  */
 export async function submitCheckoutRequest({
   form,
@@ -68,7 +68,7 @@ export async function submitCheckoutRequest({
 }
 
 /**
- * Redirects the browser to the checkout/payment URL.
+ * Redirects the user to the checkout URL.
  *
  * @param {string} url
  */
@@ -77,9 +77,9 @@ export function redirectToCheckoutUrl(url) {
 }
 
 /**
- * Returns whether the checkout response contains a valid redirect URL.
+ * Checks if the backend response contains a redirect URL.
  *
- * @param {object|null} responseData
+ * @param {object} responseData
  * @returns {boolean}
  */
 export function hasCheckoutRedirectUrl(responseData) {
