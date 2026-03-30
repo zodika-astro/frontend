@@ -60,6 +60,16 @@ function focusFirstInteractive(rootElement) {
   }
 }
 
+function scrollStepIntoView(stepElement) {
+  if (!stepElement) return;
+
+  stepElement.scrollIntoView({
+    behavior: 'smooth',
+    block: 'start',
+    inline: 'nearest',
+  });
+}
+
 /**
  * Updates the progress bar UI.
  *
@@ -106,7 +116,9 @@ export function showStep({ dom, state, index, onAfterShowStep }) {
   });
 
   requestAnimationFrame(() => {
-    focusFirstInteractive(dom.steps[boundedIndex]);
+    const activeStep = dom.steps[boundedIndex];
+    scrollStepIntoView(activeStep);
+    focusFirstInteractive(activeStep);
   });
 
   updateProgressUI(dom, state);
