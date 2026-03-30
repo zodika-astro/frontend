@@ -363,6 +363,15 @@
   flex-shrink: 0;
 }
 
+.payment-security-note {
+  margin: 10px 0 0;
+  font-family: var(--font-family-base);
+  font-size: 12px;
+  line-height: 1.4;
+  text-align: center;
+  color: rgba(47, 47, 47, 0.72);
+}
+
 /* --------------------------------------------------------------------------
  * Confirmation
  * ------------------------------------------------------------------------ */
