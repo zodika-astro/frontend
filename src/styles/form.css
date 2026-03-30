@@ -342,6 +342,27 @@
   opacity: 0.78;
 }
 
+.payment-submit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.payment-submit-btn__label {
+  display: inline-flex;
+  align-items: center;
+}
+
+.payment-submit-btn__logo {
+  display: block;
+  width: 72px;
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
 /* --------------------------------------------------------------------------
  * Confirmation
  * ------------------------------------------------------------------------ */
