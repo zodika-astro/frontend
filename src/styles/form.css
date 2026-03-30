@@ -34,6 +34,7 @@
 }
 
 .form-logo {
+  font-family: var(--font-family-display);
   font-size: 26px;
   font-weight: 700;
   letter-spacing: 0.02em;
@@ -152,6 +153,7 @@
   flex-wrap: wrap;
   align-items: center;
   gap: 8px;
+  font-family: var(--font-family-display);
   font-size: clamp(16px, 2.1vw, 18px);
   font-weight: var(--font-weight-semibold);
   line-height: 1.3;
