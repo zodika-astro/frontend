@@ -298,13 +298,15 @@ export function validatePrivacyCheckbox(input, config, t) {
         'você precisa concordar com a política de privacidade para continuar.'
       )
     );
-
+    
+    input.classList.add('invalid');
     input?.setAttribute('aria-invalid', 'true');
 
     return false;
   }
 
   hideError(config.errorIds.privacy);
+  input.classList.remove('invalid');
   input?.removeAttribute('aria-invalid');
 
   return true;
@@ -350,9 +352,9 @@ export function validateStepFields(stepElement, state, config, t) {
       isValid = validateCityInput(input, state, config, t) && isValid;
     }
 
-    if (required && type !== 'hidden' && !input.checkValidity()) {
-      input.classList.add('invalid');
-      input.setAttribute('aria-invalid', 'true');
+    if (name !== config.fields.privacyAgreed && required && type !== 'hidden' && !input.checkValidity()) {
+        input.classList.add('invalid');
+        input.setAttribute('aria-invalid', 'true');
       isValid = false;
     }
   }
