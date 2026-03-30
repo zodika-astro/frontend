@@ -556,9 +556,13 @@ export function createFormApp(productConfig) {
 
   dom.form.addEventListener('click', handleActionClick);
 
-    if (dom.errorOverlay) {
-      dom.errorOverlay.addEventListener('click', handleActionClick);
-    }
+    const resetOverlayButton = dom.errorOverlay?.querySelector('[data-action="reset"]');
+      if (resetOverlayButton) {
+          resetOverlayButton.addEventListener('click', (event) => {
+          event.preventDefault();
+          resetForm();
+          });
+      }
 
     if (dom.privacyCheckbox) {
       dom.privacyCheckbox.addEventListener('change', () => {
