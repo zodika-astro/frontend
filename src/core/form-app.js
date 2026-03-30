@@ -65,6 +65,7 @@ import {
   openOverlay,
   closeOverlay,
   showSessionExpiredOverlay,
+  restoreDefaultErrorOverlayContent,
 } from './form-overlays.js';
 import {
   resolveDom,
@@ -201,6 +202,11 @@ export function createFormApp(productConfig) {
     if (dom.confirmationSummary) {
       dom.confirmationSummary.replaceChildren();
     }
+
+    restoreDefaultErrorOverlayContent({
+      errorOverlay: dom.errorOverlay,
+      t,
+    });
 
     closeOverlay({ overlayElement: dom.spinnerOverlay, state });
     closeOverlay({ overlayElement: dom.errorOverlay, state });
@@ -538,15 +544,21 @@ export function createFormApp(productConfig) {
    * ---------------------------------------------------------------------- */
 
   function bindEvents() {
-    dom.form.addEventListener('submit', submitCheckout);
+  dom.form.addEventListener('submit', submitCheckout);
 
-    dom.form.addEventListener('click', (e) => {
-      const action = e.target.closest('[data-action]')?.dataset.action;
+    const handleActionClick = (e) => {
+    const action = e.target.closest('[data-action]')?.dataset.action;
 
-      if (action === 'next') nextStep();
-      if (action === 'back') prevStep();
-      if (action === 'reset') resetForm();
-    });
+    if (action === 'next') nextStep();
+    if (action === 'back') prevStep();
+    if (action === 'reset') resetForm();
+    };
+
+  dom.form.addEventListener('click', handleActionClick);
+
+    if (dom.errorOverlay) {
+      dom.errorOverlay.addEventListener('click', handleActionClick);
+    }
 
     if (dom.privacyCheckbox) {
       dom.privacyCheckbox.addEventListener('change', () => {
