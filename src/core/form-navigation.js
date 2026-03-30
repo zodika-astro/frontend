@@ -60,13 +60,10 @@ function focusFirstInteractive(rootElement) {
   }
 }
 
-function scrollStepIntoView(stepElement) {
-  if (!stepElement) return;
-
-  stepElement.scrollIntoView({
+function scrollPageToTop() {
+  window.scrollTo({
+    top: 0,
     behavior: 'smooth',
-    block: 'start',
-    inline: 'nearest',
   });
 }
 
@@ -117,7 +114,7 @@ export function showStep({ dom, state, index, onAfterShowStep }) {
 
   requestAnimationFrame(() => {
     const activeStep = dom.steps[boundedIndex];
-    scrollStepIntoView(activeStep);
+    scrollPageToTop(activeStep);
     focusFirstInteractive(activeStep);
   });
 
