@@ -121,8 +121,8 @@ export function closeOverlay({ overlayElement, state }) {
 export function setSessionExpiredOverlayContent({ errorOverlay, t }) {
   if (!errorOverlay) return;
 
-  const heading = errorOverlay.querySelector('h2');
-  const paragraph = errorOverlay.querySelector('p');
+  const heading = errorOverlay.querySelector('#error-overlay-title');
+  const paragraph = errorOverlay.querySelector('#error-overlay-text');
 
   if (heading) {
     heading.textContent = t(
@@ -135,6 +135,34 @@ export function setSessionExpiredOverlayContent({ errorOverlay, t }) {
     paragraph.textContent = t(
       'overlays.sessionExpiredBody',
       'por segurança, esta sessão do formulário não está mais ativa. por favor, comece novamente.'
+    );
+  }
+}
+
+/**
+ * Restores the default generic error overlay content.
+ *
+ * @param {object} params
+ * @param {HTMLElement|null} params.errorOverlay
+ * @param {Function} params.t
+ */
+export function restoreDefaultErrorOverlayContent({ errorOverlay, t }) {
+  if (!errorOverlay) return;
+
+  const heading = errorOverlay.querySelector('#error-overlay-title');
+  const paragraph = errorOverlay.querySelector('#error-overlay-text');
+
+  if (heading) {
+    heading.textContent = t(
+      'overlays.errorTitle',
+      'ops... algo deu errado.'
+    );
+  }
+
+  if (paragraph) {
+    paragraph.textContent = t(
+      'overlays.errorBody',
+      'você quer tentar novamente? clique no botão abaixo ou envie um e-mail para: info@zodika.com.br'
     );
   }
 }
