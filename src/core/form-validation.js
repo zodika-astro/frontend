@@ -9,6 +9,7 @@
  * - Validate individual inputs and steps
  * - Control error visibility and accessibility attributes
  * - Normalize input values when needed
+ * - Config-driven validation helpers used to resolve field rules
  * ========================================================================== */
 
 import {
@@ -143,6 +144,134 @@ export function clearAllInvalidStates(form) {
 }
 
 /**
+ * Returns the validation schema map from product config.
+ *
+ * @param {object} config
+ * @returns {object}
+ */
+function getValidationSchema(config) {
+  return config?.validation?.fields || {};
+}
+
+/**
+ * Returns the validation rule for a field name.
+ *
+ * @param {object} config
+ * @param {string} fieldName
+ * @returns {object|null}
+ */
+function getFieldValidationRule(config, fieldName) {
+  const schema = getValidationSchema(config);
+  return schema?.[fieldName] || null;
+}
+
+/**
+ * Returns a normalized field value.
+ *
+ * @param {HTMLElement|null} field
+ * @returns {string}
+ */
+function getNormalizedFieldValue(field) {
+  return String(field?.value || '').trim();
+}
+
+/**
+ * Checks whether a restored or current city field is coherently validated.
+ *
+ * @param {HTMLInputElement} input
+ * @param {object} state
+ * @returns {boolean}
+ */
+function hasCoherentCitySelection(input, state) {
+  const value = getNormalizedFieldValue(input);
+
+  const placePayload = state?.city?.placePayload || null;
+  const hasPlacePayload =
+    Boolean(placePayload?.place_id) &&
+    Number.isFinite(Number(placePayload?.lat)) &&
+    Number.isFinite(Number(placePayload?.lng));
+
+  const form = input?.form || null;
+  const placeId = form?.elements?.namedItem?.('birth_place_place_id');
+  const lat = form?.elements?.namedItem?.('birth_place_lat');
+  const lng = form?.elements?.namedItem?.('birth_place_lng');
+
+  const hasHiddenFields =
+    Boolean(String(placeId?.value || '').trim()) &&
+    Boolean(String(lat?.value || '').trim()) &&
+    Boolean(String(lng?.value || '').trim());
+
+  return Boolean(state?.city?.isValidated) && Boolean(value) && (hasPlacePayload || hasHiddenFields);
+}
+
+/**
+ * Validates a generic required field using schema-driven messaging.
+ *
+ * @param {HTMLElement|null} field
+ * @param {object|null} rule
+ * @param {Function} t
+ * @returns {boolean}
+ */
+function validateRequiredField(field, rule, t) {
+  if (!field?.hasAttribute?.('required')) return true;
+  if (field instanceof HTMLInputElement && field.type === 'hidden') return true;
+  if (field.checkValidity()) {
+    return clearFieldInvalid(field, rule?.errorId);
+  }
+
+  return markFieldInvalid(
+    field,
+    rule?.errorId,
+    t(rule?.messageKey, rule?.fallbackMessage || 'por favor, preencha este campo.')
+  );
+}
+
+/**
+ * Runs the schema-defined validator for a field when available.
+ *
+ * @param {object} params
+ * @param {HTMLElement} params.field
+ * @param {object} params.state
+ * @param {object} params.config
+ * @param {Function} params.t
+ * @returns {boolean}
+ */
+function validateFieldBySchema({
+  field,
+  state,
+  config,
+  t,
+}) {
+  const rule = getFieldValidationRule(config, field?.name);
+  if (!rule) {
+    return validateRequiredField(field, null, t);
+  }
+
+  switch (rule.type) {
+    case 'email':
+      return validateEmailInput(field, config, t);
+
+    case 'full_name':
+      return validateNameInput(field, config, t, rule);
+
+    case 'birth_date':
+      return validateDateInput(field, config, t);
+
+    case 'birth_time':
+      return validateTimeInput(field, config, t);
+
+    case 'birth_place':
+      return validateCityInput(field, state, config, t, rule);
+
+    case 'privacy_checkbox':
+      return validatePrivacyCheckbox(field, config, t);
+
+    default:
+      return validateRequiredField(field, rule, t);
+  }
+}
+
+/**
  * Validates email input.
  *
  * @param {HTMLInputElement} input
@@ -175,20 +304,30 @@ export function validateEmailInput(input, config, t) {
  * @param {Function} t
  * @returns {boolean}
  */
-export function validateNameInput(input, config, t) {
+export function validateNameInput(input, config, t, rule = null) {
   const normalized = normalizePersonName(input?.value || '');
-  const words = normalized.split(' ').filter(Boolean);
+  const words = normalized
+    .split(' ')
+    .map((word) => word.trim())
+    .filter(Boolean);
+
+  const meaningfulWords = words.filter((word) => word.length >= 2);
+
+  const minMeaningfulWords = Number(rule?.minMeaningfulWords || 2);
+  const minTotalLength = Number(rule?.minTotalLength || 4);
 
   const isValid =
-    normalized.length >= 6 &&
-    words.length >= 2 &&
-    words.slice(0, 2).every((word) => word.length >= 2);
+    normalized.length >= minTotalLength &&
+    meaningfulWords.length >= minMeaningfulWords;
 
   if (!isValid) {
     return markFieldInvalid(
       input,
       config.errorIds.name,
-      t('errors.invalidName', 'por favor, preencha seu nome completo.')
+      t(
+        rule?.messageKey || 'errors.invalidName',
+        rule?.fallbackMessage || 'por favor, preencha seu nome completo.'
+      )
     );
   }
 
@@ -269,12 +408,15 @@ export function validateTimeInput(input, config, t) {
  * @param {Function} t
  * @returns {boolean}
  */
-export function validateCityInput(input, state, config, t) {
-  if (!state?.city?.isValidated) {
+export function validateCityInput(input, state, config, t, rule = null) {
+  if (!hasCoherentCitySelection(input, state)) {
     return markFieldInvalid(
       input,
       config.errorIds.city,
-      t('errors.invalidCity', 'por favor, selecione uma cidade válida da lista.')
+      t(
+        rule?.messageKey || 'errors.invalidCity',
+        rule?.fallbackMessage || 'por favor, selecione uma cidade válida da lista.'
+      )
     );
   }
 
@@ -324,47 +466,25 @@ export function validatePrivacyCheckbox(input, config, t) {
 export function validateStepFields(stepElement, state, config, t) {
   if (!stepElement) return false;
 
-  const inputs = Array.from(stepElement.querySelectorAll('input'));
-  const selects = Array.from(stepElement.querySelectorAll('select'));
+  const fields = Array.from(
+    stepElement.querySelectorAll('input, select, textarea')
+  );
 
   let isValid = true;
 
-  for (const input of inputs) {
-    const { name, required, type } = input;
+  for (const field of fields) {
+    if (!(field instanceof HTMLElement)) continue;
+    if (!('name' in field)) continue;
+    if (!field.name) continue;
 
-    if (name === config.fields.email) {
-      isValid = validateEmailInput(input, config, t) && isValid;
-    }
+    const fieldIsValid = validateFieldBySchema({
+      field,
+      state,
+      config,
+      t,
+    });
 
-    if (name === config.fields.fullName) {
-      isValid = validateNameInput(input, config, t) && isValid;
-    }
-
-    if (name === config.fields.birthDate) {
-      isValid = validateDateInput(input, config, t) && isValid;
-    }
-
-    if (name === config.fields.birthTime) {
-      isValid = validateTimeInput(input, config, t) && isValid;
-    }
-
-    if (name === config.fields.birthPlace) {
-      isValid = validateCityInput(input, state, config, t) && isValid;
-    }
-
-    if (name !== config.fields.privacyAgreed && required && type !== 'hidden' && !input.checkValidity()) {
-        input.classList.add('invalid');
-        input.setAttribute('aria-invalid', 'true');
-      isValid = false;
-    }
-  }
-
-  for (const select of selects) {
-    if (select.required && !select.checkValidity()) {
-      select.classList.add('invalid');
-      select.setAttribute('aria-invalid', 'true');
-      isValid = false;
-    }
+    isValid = fieldIsValid && isValid;
   }
 
   return isValid;
