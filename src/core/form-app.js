@@ -410,6 +410,7 @@ export function createFormApp(productConfig) {
       }
 
       const flushResult = await flushPendingUpdate({
+        state,
         config,
         apiUrls,
         storageKeys,
@@ -435,8 +436,7 @@ export function createFormApp(productConfig) {
           form: dom.form,
           targetStepIndex: nextIndex,
           previousStepIndex,
-        }).catch(async (error) => {
-          await onTrackingError(error);
+          onTrackingError,
         });
       }
     } catch (error) {
@@ -476,6 +476,7 @@ export function createFormApp(productConfig) {
       if (!validatePrivacyCheckbox(dom.privacyCheckbox, config, t)) return;
 
       const flushResult = await flushPendingUpdate({
+        state,
         config,
         apiUrls,
         storageKeys,
