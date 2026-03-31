@@ -39,15 +39,6 @@ function focusFirstInteractive(rootElement) {
 }
 
 /**
- * Returns the main app root element used for inert/background locking.
- *
- * @returns {HTMLElement|null}
- */
-function getAppRoot() {
-  return document.querySelector('.form-app');
-}
-
-/**
  * Locks background page scroll while a modal overlay is open.
  */
 function lockBodyScroll() {
@@ -61,34 +52,6 @@ function lockBodyScroll() {
 function unlockBodyScroll() {
   delete document.body.dataset.zdkOverlayScrollLock;
   document.body.style.overflow = '';
-}
-
-/**
- * Disables background interactivity while a modal overlay is open.
- */
-function setAppInert() {
-  const appRoot = getAppRoot();
-  if (!appRoot) return;
-
-  appRoot.setAttribute('aria-hidden', 'true');
-
-  if ('inert' in appRoot) {
-    appRoot.inert = true;
-  }
-}
-
-/**
- * Restores background interactivity after modal overlays close.
- */
-function clearAppInert() {
-  const appRoot = getAppRoot();
-  if (!appRoot) return;
-
-  appRoot.removeAttribute('aria-hidden');
-
-  if ('inert' in appRoot) {
-    appRoot.inert = false;
-  }
 }
 
 /**
@@ -115,7 +78,6 @@ export function openOverlay({ overlayElement, state }) {
   state.ui.lastFocusedBeforeOverlay = document.activeElement;
 
   lockBodyScroll();
-  setAppInert();
 
   overlayElement.style.display = 'flex';
 
@@ -174,7 +136,6 @@ export function closeOverlay({ overlayElement, state }) {
 
   if (!hasOpenOverlay()) {
     unlockBodyScroll();
-    clearAppInert();
   }
 
   const previousFocus = state?.ui?.lastFocusedBeforeOverlay;
