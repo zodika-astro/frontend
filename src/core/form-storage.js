@@ -23,6 +23,7 @@ export function getStorageKeys(config) {
   return {
     sessionToken: `zdk_${productKey}_session_token`,
     pendingUpdate: `zdk_${productKey}_pending_update`,
+    draftState: `zdk_${productKey}_draft_state`,
   };
 }
 
@@ -109,6 +110,50 @@ export function clearPendingUpdate(storageKeys) {
     sessionStorage.removeItem(storageKeys.pendingUpdate);
   } catch {}
 }
+/**
+ * Reads draft state from sessionStorage.
+ *
+ * @param {object} storageKeys
+ * @returns {object|null}
+ */
+export function getDraftState(storageKeys) {
+  try {
+    const raw = sessionStorage.getItem(storageKeys.draftState);
+    if (!raw) return null;
+
+    return JSON.parse(raw);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Stores draft state in sessionStorage.
+ *
+ * @param {object} storageKeys
+ * @param {object|null} payload
+ */
+export function setDraftState(storageKeys, payload) {
+  try {
+    if (!payload) return;
+
+    sessionStorage.setItem(
+      storageKeys.draftState,
+      JSON.stringify(payload)
+    );
+  } catch {}
+}
+
+/**
+ * Removes draft state from sessionStorage.
+ *
+ * @param {object} storageKeys
+ */
+export function clearDraftState(storageKeys) {
+  try {
+    sessionStorage.removeItem(storageKeys.draftState);
+  } catch {}
+}
 
 /**
  * Clears all form-related storage keys.
@@ -118,4 +163,5 @@ export function clearPendingUpdate(storageKeys) {
 export function clearAllFormStorage(storageKeys) {
   clearSessionToken(storageKeys);
   clearPendingUpdate(storageKeys);
+  clearDraftState(storageKeys);
 }
