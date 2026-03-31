@@ -34,6 +34,8 @@ import {
   getPendingUpdate,
   setPendingUpdate,
   clearPendingUpdate,
+  setLastTrackingSuccessAt,
+  clearLastTrackingSuccessAt,
 } from './form-storage.js';
 
 /**
@@ -277,7 +279,8 @@ async function runQueuedProgressSync({
         payload,
         config.timeouts.formUpdate
       );
-
+      
+      setLastTrackingSuccessAt(storageKeys, Date.now());
       const storedPayload = getPendingUpdate(storageKeys);
       if (storedPayload && arePayloadsEqual(storedPayload, payload)) {
         clearPendingUpdate(storageKeys);
@@ -395,6 +398,7 @@ export async function startFormSession({
   state.session.token = token;
   state.session.isStarted = true;
   setSessionToken(storageKeys, token);
+  setLastTrackingSuccessAt(storageKeys, Date.now());
 
   return true;
 }
@@ -556,6 +560,7 @@ export async function markFormSessionSubmitted({
   state,
   config,
   apiUrls,
+  storageKeys,
   form,
   lastStepIndex,
 }) {
@@ -568,6 +573,7 @@ export async function markFormSessionSubmitted({
     payload,
     config.timeouts.formSubmit
   );
+  setLastTrackingSuccessAt(storageKeys, Date.now());
 }
 
 /**
@@ -620,6 +626,7 @@ export async function handleTrackingError({
     clearSessionState(state);
     clearSessionToken(storageKeys);
     clearPendingUpdate(storageKeys);
+    clearLastTrackingSuccessAt(storageKeys);
 
     if (typeof onSessionInactive === 'function') {
       await onSessionInactive();
