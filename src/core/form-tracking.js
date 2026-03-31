@@ -127,34 +127,60 @@ export function clearPendingUpdatePayload(storageKeys) {
 }
 
 /**
+ * Returns the tracking field map from product config.
+ *
+ * @param {object} config
+ * @returns {object}
+ */
+function getTrackingFieldMap(config) {
+  return config?.tracking?.fieldMap || {};
+}
+
+/**
+ * Reads a form value using a config-driven field name.
+ *
+ * @param {object} formDataObject
+ * @param {string} fieldName
+ * @returns {string|null}
+ */
+function readMappedFieldValue(formDataObject, fieldName) {
+  if (!fieldName) return null;
+
+  const value = formDataObject?.[fieldName];
+  return value == null || value === '' ? null : value;
+}
+
+/**
  * Builds the current form payload snapshot using the current form values.
  *
  * @param {HTMLFormElement} form
  * @param {object} state
  * @returns {object}
  */
-export function getCurrentFormPayload(form, state) {
+export function getCurrentFormPayload(form, state, config) {
   const formData = new FormData(form);
   const data = Object.fromEntries(formData.entries());
+  const fieldMap = getTrackingFieldMap(config);
 
-  if (state?.city?.selectedDisplay) {
-    data.birth_place = state.city.selectedDisplay;
+  const birthPlaceFieldName = fieldMap.birth_place;
+  if (birthPlaceFieldName && state?.city?.selectedDisplay) {
+    data[birthPlaceFieldName] = state.city.selectedDisplay;
   }
 
   return {
-    email: normalizeEmail(data.email || ''),
-    name: String(data.name || '').trim(),
-    birth_date: data.birth_date || null,
-    birth_time: data.birth_time || null,
-    birth_place: data.birth_place || null,
-    birth_place_place_id: data.birth_place_place_id || null,
-    birth_place_full: data.birth_place_full || null,
-    birth_place_country: data.birth_place_country || null,
-    birth_place_admin1: data.birth_place_admin1 || null,
-    birth_place_admin2: data.birth_place_admin2 || null,
-    birth_place_lat: data.birth_place_lat || null,
-    birth_place_lng: data.birth_place_lng || null,
-    birth_place_json: data.birth_place_json || null,
+    email: normalizeEmail(readMappedFieldValue(data, fieldMap.email) || ''),
+    name: String(readMappedFieldValue(data, fieldMap.name) || '').trim(),
+    birth_date: readMappedFieldValue(data, fieldMap.birth_date),
+    birth_time: readMappedFieldValue(data, fieldMap.birth_time),
+    birth_place: readMappedFieldValue(data, fieldMap.birth_place),
+    birth_place_place_id: readMappedFieldValue(data, fieldMap.birth_place_place_id),
+    birth_place_full: readMappedFieldValue(data, fieldMap.birth_place_full),
+    birth_place_country: readMappedFieldValue(data, fieldMap.birth_place_country),
+    birth_place_admin1: readMappedFieldValue(data, fieldMap.birth_place_admin1),
+    birth_place_admin2: readMappedFieldValue(data, fieldMap.birth_place_admin2),
+    birth_place_lat: readMappedFieldValue(data, fieldMap.birth_place_lat),
+    birth_place_lng: readMappedFieldValue(data, fieldMap.birth_place_lng),
+    birth_place_json: readMappedFieldValue(data, fieldMap.birth_place_json),
   };
 }
 
@@ -234,7 +260,7 @@ export function buildProgressPayload({
     current_step_key: getStepKeyByIndex(config, currentStepIndex),
     last_completed_step_key: getStepKeyByIndex(config, lastCompletedStepIndex),
     highest_completed_step_key: getStepKeyByIndex(config, highestCompletedStepIndex),
-    form_data: getCurrentFormPayload(form, state),
+    form_data: getCurrentFormPayload(form, state, config),
   };
 }
 
@@ -360,7 +386,7 @@ export function buildSubmitSessionPayload(state, config, form, lastStepIndex) {
     current_step_key: getStepKeyByIndex(config, lastStepIndex),
     last_completed_step_key: getStepKeyByIndex(config, lastStepIndex),
     highest_completed_step_key: getStepKeyByIndex(config, lastStepIndex),
-    form_data: getCurrentFormPayload(form, state),
+    form_data: getCurrentFormPayload(form, state, config),
   };
 }
 
