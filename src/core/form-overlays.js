@@ -39,6 +39,70 @@ function focusFirstInteractive(rootElement) {
 }
 
 /**
+ * Returns the main app root element used for inert/background locking.
+ *
+ * @returns {HTMLElement|null}
+ */
+function getAppRoot() {
+  return document.querySelector('.form-app');
+}
+
+/**
+ * Locks background page scroll while a modal overlay is open.
+ */
+function lockBodyScroll() {
+  document.body.dataset.zdkOverlayScrollLock = 'true';
+  document.body.style.overflow = 'hidden';
+}
+
+/**
+ * Restores background page scroll after modal overlays close.
+ */
+function unlockBodyScroll() {
+  delete document.body.dataset.zdkOverlayScrollLock;
+  document.body.style.overflow = '';
+}
+
+/**
+ * Disables background interactivity while a modal overlay is open.
+ */
+function setAppInert() {
+  const appRoot = getAppRoot();
+  if (!appRoot) return;
+
+  appRoot.setAttribute('aria-hidden', 'true');
+
+  if ('inert' in appRoot) {
+    appRoot.inert = true;
+  }
+}
+
+/**
+ * Restores background interactivity after modal overlays close.
+ */
+function clearAppInert() {
+  const appRoot = getAppRoot();
+  if (!appRoot) return;
+
+  appRoot.removeAttribute('aria-hidden');
+
+  if ('inert' in appRoot) {
+    appRoot.inert = false;
+  }
+}
+
+/**
+ * Returns whether any overlay is currently open.
+ *
+ * @returns {boolean}
+ */
+function hasOpenOverlay() {
+  return Array.from(document.querySelectorAll('.overlay')).some(
+    (element) => element instanceof HTMLElement && element.style.display !== 'none'
+  );
+}
+
+/**
  * Opens an overlay and traps focus inside it.
  *
  * @param {object} params
@@ -49,6 +113,9 @@ export function openOverlay({ overlayElement, state }) {
   if (!overlayElement || !state?.ui) return;
 
   state.ui.lastFocusedBeforeOverlay = document.activeElement;
+
+  lockBodyScroll();
+  setAppInert();
 
   overlayElement.style.display = 'flex';
 
@@ -91,6 +158,7 @@ export function openOverlay({ overlayElement, state }) {
  * @param {HTMLElement|null} params.overlayElement
  * @param {object} params.state
  */
+
 export function closeOverlay({ overlayElement, state }) {
   if (!overlayElement) return;
 
@@ -102,6 +170,11 @@ export function closeOverlay({ overlayElement, state }) {
       overlayElement._zdkTrapHandler
     );
     overlayElement._zdkTrapHandler = null;
+  }
+
+  if (!hasOpenOverlay()) {
+    unlockBodyScroll();
+    clearAppInert();
   }
 
   const previousFocus = state?.ui?.lastFocusedBeforeOverlay;
