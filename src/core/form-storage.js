@@ -9,13 +9,15 @@
  * - Persist session token across page reloads
  * - Store pending tracking updates for retry
  * - Provide safe read/write wrappers
+ * - Persists a lightweight client-side snapshot
+ * - Persists lightweight tracking timestamps 
  * ========================================================================== */
 
 /**
  * Returns storage keys scoped by product.
  *
  * @param {object} config
- * @returns {{sessionToken: string, pendingUpdate: string, draftState: string}}
+  * @returns {{sessionToken: string, pendingUpdate: string, draftState: string, lastTrackingSuccessAt: string}}
  */
 export function getStorageKeys(config) {
   const productKey = config?.productKey || 'default';
@@ -24,6 +26,7 @@ export function getStorageKeys(config) {
     sessionToken: `zdk_${productKey}_session_token`,
     pendingUpdate: `zdk_${productKey}_pending_update`,
     draftState: `zdk_${productKey}_draft_state`,
+    lastTrackingSuccessAt: `zdk_${productKey}_last_tracking_success_at`,
   };
 }
 
@@ -156,6 +159,52 @@ export function clearDraftState(storageKeys) {
 }
 
 /**
+ * Reads the last successful tracking timestamp from sessionStorage.
+ *
+ * @param {object} storageKeys
+ * @returns {number|null}
+ */
+export function getLastTrackingSuccessAt(storageKeys) {
+  try {
+    const raw = sessionStorage.getItem(storageKeys.lastTrackingSuccessAt);
+    if (!raw) return null;
+
+    const value = Number(raw);
+    return Number.isFinite(value) ? value : null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Stores the last successful tracking timestamp in sessionStorage.
+ *
+ * @param {object} storageKeys
+ * @param {number} timestamp
+ */
+export function setLastTrackingSuccessAt(storageKeys, timestamp) {
+  try {
+    if (!Number.isFinite(timestamp)) return;
+
+    sessionStorage.setItem(
+      storageKeys.lastTrackingSuccessAt,
+      String(timestamp)
+    );
+  } catch {}
+}
+
+/**
+ * Removes the last successful tracking timestamp from sessionStorage.
+ *
+ * @param {object} storageKeys
+ */
+export function clearLastTrackingSuccessAt(storageKeys) {
+  try {
+    sessionStorage.removeItem(storageKeys.lastTrackingSuccessAt);
+  } catch {}
+}
+
+/**
  * Clears all form-related storage keys.
  *
  * @param {object} storageKeys
@@ -164,4 +213,5 @@ export function clearAllFormStorage(storageKeys) {
   clearSessionToken(storageKeys);
   clearPendingUpdate(storageKeys);
   clearDraftState(storageKeys);
+  clearLastTrackingSuccessAt(storageKeys);
 }
