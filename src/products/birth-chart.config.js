@@ -121,11 +121,26 @@ const birthChartConfig = {
     'confirmation',
   ],
 
-  tracking: {
+    tracking: {
     formType: 'birth_chart',
     sessionInactiveCode: 'SESSION_NOT_ACTIVE',
     debounceMs: 900,
     sessionInactivityWindowMs: 2 * 60 * 60 * 1000,
+    fieldMap: {
+      email: 'email',
+      name: 'name',
+      birth_date: 'birth_date',
+      birth_time: 'birth_time',
+      birth_place: 'birth_place',
+      birth_place_place_id: 'birth_place_place_id',
+      birth_place_full: 'birth_place_full',
+      birth_place_country: 'birth_place_country',
+      birth_place_admin1: 'birth_place_admin1',
+      birth_place_admin2: 'birth_place_admin2',
+      birth_place_lat: 'birth_place_lat',
+      birth_place_lng: 'birth_place_lng',
+      birth_place_json: 'birth_place_json',
+    },
   },
 
   timeouts: {
