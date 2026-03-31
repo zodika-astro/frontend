@@ -649,14 +649,34 @@ export function createFormApp(productConfig) {
       const target = event.target;
       const tagName = String(target?.tagName || '').toLowerCase();
       const inputType = String(target?.getAttribute?.('type') || '').toLowerCase();
+      const fieldName = String(target?.getAttribute?.('name') || '');
+
       const isCheckbox = tagName === 'input' && inputType === 'checkbox';
       const isButton = tagName === 'button';
+      const isTextarea = tagName === 'textarea';
       const isLastStep = state.ui.currentStepIndex === dom.steps.length - 1;
 
-      if (!isLastStep && !isCheckbox && !isButton) {
-        event.preventDefault();
-        nextStep();
+      const enterAdvanceFieldNames = new Set([
+        config.fields.email,
+        config.fields.fullName,
+        config.fields.birthDate,
+        config.fields.birthTime,
+      ]);
+
+      const canAutoAdvanceFromField =
+        tagName === 'input' &&
+        enterAdvanceFieldNames.has(fieldName);
+
+      if (isLastStep || isCheckbox || isButton || isTextarea) {
+        return;
       }
+
+      if (!canAutoAdvanceFromField) {
+        return;
+      }
+
+      event.preventDefault();
+      nextStep();
     });
 
     bindDraftTrackingListeners({
