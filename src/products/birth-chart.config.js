@@ -82,6 +82,7 @@ const birthChartConfig = {
     formType: 'birth_chart',
     sessionInactiveCode: 'SESSION_NOT_ACTIVE',
     debounceMs: 900,
+    sessionInactivityWindowMs: 2 * 60 * 60 * 1000,
   },
 
   timeouts: {
