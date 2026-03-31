@@ -393,6 +393,13 @@
   list-style: none;
 }
 
+.product-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 0.9fr) minmax(0, 1.3fr);
+  align-items: start;
+  gap: 24px;
+}
+
 /* --------------------------------------------------------------------------
  * Consent
  * ------------------------------------------------------------------------ */
