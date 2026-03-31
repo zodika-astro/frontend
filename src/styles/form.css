@@ -385,7 +385,7 @@
   
   font-size: var(--font-size-sm);
   line-height: 1.6;
-  color: var(--color-text-muted);
+  color: var(--color-text);
 }
 
 .confirmation-summary ul,
