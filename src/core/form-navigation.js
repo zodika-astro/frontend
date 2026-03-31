@@ -60,10 +60,31 @@ function focusFirstInteractive(rootElement) {
   }
 }
 
-function scrollPageToTop() {
+/**
+ * Returns whether the current viewport should be treated as mobile-sized.
+ *
+ * @returns {boolean}
+ */
+function isMobileViewport() {
+  return window.matchMedia('(max-width: 768px)').matches;
+}
+
+/**
+ * Scrolls the page upward only when the active step starts above the current
+ *
+ * @param {HTMLElement|null} stepElement
+ */
+function scrollPageForStepTransition(stepElement) {
+  if (!stepElement) return;
+
+  const rect = stepElement.getBoundingClientRect();
+  const shouldScrollUp = rect.top < 0;
+
+  if (!shouldScrollUp) return;
+
   window.scrollTo({
     top: 0,
-    behavior: 'smooth',
+    behavior: isMobileViewport() ? 'auto' : 'smooth',
   });
 }
 
@@ -112,9 +133,9 @@ export function showStep({ dom, state, index, onAfterShowStep }) {
     stepElement.classList.toggle('active', isCurrent);
   });
 
-  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
     const activeStep = dom.steps[boundedIndex];
-    scrollPageToTop(activeStep);
+    scrollPageForStepTransition(activeStep);
     focusFirstInteractive(activeStep);
   });
 
