@@ -493,10 +493,21 @@ export function createFormApp(productConfig) {
       const handled = await onTrackingError(error);
 
       if (!handled) {
-        showError(
-          config.errorIds.email,
-          t('errors.startSessionFailed', 'não foi possível iniciar sua sessão agora. tente novamente.')
-        );
+        const isFirstStep = state.ui.currentStepIndex === 0;
+
+        if (isFirstStep) {
+          showError(
+            config.errorIds.email,
+            t('errors.startSessionFailed', 'não foi possível iniciar sua sessão agora. tente novamente.')
+          );
+        } else {
+          closeOverlay({ overlayElement: dom.spinnerOverlay, state });
+          restoreDefaultErrorOverlayContent({
+            errorOverlay: dom.errorOverlay,
+            t,
+          });
+          openOverlay({ overlayElement: dom.errorOverlay, state });
+        }
       }
     } finally {
       state.tracking.isSyncingStep = false;
