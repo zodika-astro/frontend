@@ -119,10 +119,12 @@ export function createFormApp(productConfig) {
   function isLocallyExpiredSession() {
     const token = getSessionToken(storageKeys);
     const lastTrackingSuccessAt = getLastTrackingSuccessAt(storageKeys);
+    const sessionInactivityWindowMs =
+      Number(config?.tracking?.sessionInactivityWindowMs) || 0;
 
-    if (!token || !lastTrackingSuccessAt) return false;
-
-    const sessionInactivityWindowMs = 2 * 60 * 60 * 1000;
+    if (!token || !lastTrackingSuccessAt || !sessionInactivityWindowMs) {
+      return false;
+    }
 
     return Date.now() - lastTrackingSuccessAt > sessionInactivityWindowMs;
   }
