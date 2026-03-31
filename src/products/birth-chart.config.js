@@ -69,46 +69,46 @@ const birthChartConfig = {
     privacy: 'privacyError',
   },
 
-    validation: {
+  validation: {
     fields: {
-      email: {
-        type: 'email',
-        errorId: 'emailError',
-        messageKey: 'errors.invalidEmail',
-        fallbackMessage: 'por favor, insira um e-mail válido.',
-      },
-      name: {
-        type: 'full_name',
-        errorId: 'nameError',
-        minMeaningfulWords: 2,
-        minTotalLength: 4,
-        messageKey: 'errors.invalidName',
-        fallbackMessage: 'por favor, preencha seu nome completo.',
-      },
-      birth_date: {
-        type: 'birth_date',
-        errorId: 'dateError',
-        messageKey: 'errors.invalidDate',
-        fallbackMessage: 'por favor, insira uma data válida.',
-      },
-      birth_time: {
-        type: 'birth_time',
-        errorId: 'timeError',
-        messageKey: 'errors.invalidTime',
-        fallbackMessage: 'por favor, insira um horário válido.',
-      },
-      birth_place: {
-        type: 'birth_place',
-        errorId: 'cityError',
-        messageKey: 'errors.invalidCity',
-        fallbackMessage: 'por favor, selecione uma cidade válida da lista.',
-      },
-      privacy_agreed: {
-        type: 'privacy_checkbox',
-        errorId: 'privacyError',
-        messageKey: 'errors.privacyRequired',
-        fallbackMessage: 'você precisa concordar com a política de privacidade para continuar.',
-      },
+    email: {
+      type: 'email',
+      errorId: 'emailError',
+      messageKey: 'errors.invalidEmail',
+      fallbackMessage: 'por favor, insira um e-mail válido.',
+    },
+    name: {
+      type: 'full_name',
+      errorId: 'nameError',
+      minMeaningfulWords: 2,
+      minTotalLength: 4,
+      messageKey: 'errors.invalidName',
+      fallbackMessage: 'por favor, preencha seu nome completo.',
+    },
+    birth_date: {
+      type: 'birth_date',
+      errorId: 'dateError',
+      messageKey: 'errors.invalidDate',
+      fallbackMessage: 'por favor, insira uma data válida.',
+    },
+    birth_time: {
+      type: 'birth_time',
+      errorId: 'timeError',
+      messageKey: 'errors.invalidTime',
+      fallbackMessage: 'por favor, insira um horário válido.',
+    },
+    birth_place: {
+      type: 'birth_place',
+      errorId: 'cityError',
+      messageKey: 'errors.invalidCity',
+      fallbackMessage: 'por favor, selecione uma cidade válida da lista.',
+    },
+    privacy_agreed: {
+      type: 'privacy_checkbox',
+      errorId: 'privacyError',
+      messageKey: 'errors.privacyRequired',
+      fallbackMessage: 'você precisa concordar com a política de privacidade para continuar.',
+    },
     },
   },
 
