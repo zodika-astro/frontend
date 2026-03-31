@@ -237,6 +237,108 @@ export function buildProgressPayload({
 }
 
 /**
+ * Compares two payload objects for equality.
+ *
+ * @param {object|null} a
+ * @param {object|null} b
+ * @returns {boolean}
+ */
+function arePayloadsEqual(a, b) {
+  try {
+    return JSON.stringify(a) === JSON.stringify(b);
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Processes queued progress updates sequentially.
+ *
+ * @param {object} params
+ * @param {object} params.state
+ * @param {object} params.config
+ * @param {object} params.apiUrls
+ * @param {object} params.storageKeys
+ * @param {Function} params.onTrackingError
+ */
+async function runQueuedProgressSync({
+  state,
+  config,
+  apiUrls,
+  storageKeys,
+  onTrackingError,
+}) {
+  while (state?.tracking?.queuedProgressPayload) {
+    const payload = state.tracking.queuedProgressPayload;
+    state.tracking.queuedProgressPayload = null;
+    try {
+      await postJson(
+        apiUrls.formUpdate,
+        payload,
+        config.timeouts.formUpdate
+      );
+
+      const storedPayload = getPendingUpdate(storageKeys);
+      if (storedPayload && arePayloadsEqual(storedPayload, payload)) {
+        clearPendingUpdate(storageKeys);
+      }
+    } catch (error) {
+      console.error('[ZDK] Progress sync error:', error);
+
+      if (typeof onTrackingError === 'function') {
+        await onTrackingError(error);
+      }
+      return;
+    }
+  }
+}
+
+/**
+ * Enqueues a progress update and ensures serialized execution.
+ *
+ * @param {object} params
+ * @param {object} params.state
+ * @param {object} params.config
+ * @param {object} params.apiUrls
+ * @param {object} params.storageKeys
+ * @param {object} params.payload
+ * @param {Function} params.onTrackingError
+ * @returns {Promise<void>}
+ */
+export function enqueueFormSessionProgressSync({
+  state,
+  config,
+  apiUrls,
+  storageKeys,
+  payload,
+  onTrackingError,
+}) {
+  if (!state?.session?.token || !payload) {
+    return Promise.resolve();
+  }
+  setPendingUpdate(storageKeys, payload);
+  state.tracking.queuedProgressPayload = payload;
+  if (state.tracking.isUpdateRequestInFlight) {
+    return state.tracking.activeUpdatePromise || Promise.resolve();
+  }
+  state.tracking.isUpdateRequestInFlight = true;
+  const syncPromise = runQueuedProgressSync({
+    state,
+    config,
+    apiUrls,
+    storageKeys,
+    onTrackingError,
+  }).finally(() => {
+    state.tracking.isUpdateRequestInFlight = false;
+    state.tracking.activeUpdatePromise = null;
+  });
+
+  state.tracking.activeUpdatePromise = syncPromise;
+
+  return syncPromise;
+}
+
+/**
  * Builds the payload used when the tracked form session reaches submit.
  *
  * @param {object} state
@@ -310,6 +412,7 @@ export async function startFormSession({
  * @param {number} params.previousStepIndex
  * @returns {Promise<void>}
  */
+
 export async function updateFormSessionProgress({
   state,
   config,
@@ -318,6 +421,7 @@ export async function updateFormSessionProgress({
   form,
   targetStepIndex,
   previousStepIndex,
+  onTrackingError,
 }) {
   if (!state?.session?.token) return;
 
@@ -335,15 +439,14 @@ export async function updateFormSessionProgress({
     highestCompletedStepIndex: snapshot.highestCompletedStepIndex,
   });
 
-  setPendingUpdate(storageKeys, payload);
-
-  await postJson(
-    apiUrls.formUpdate,
+  await enqueueFormSessionProgressSync({
+    state,
+    config,
+    apiUrls,
+    storageKeys,
     payload,
-    config.timeouts.formUpdate
-  );
-
-  clearPendingUpdate(storageKeys);
+    onTrackingError,
+  });
 }
 
 /**
@@ -360,11 +463,16 @@ export async function updateFormSessionProgress({
  * @returns {Promise<{ok:boolean,flushed:boolean,handled:boolean,reason:string|null}>}
  */
 export async function flushPendingUpdate({
+  state,
   config,
   apiUrls,
   storageKeys,
   onTrackingError,
 }) {
+  
+  if (state?.tracking?.activeUpdatePromise) {
+  await state.tracking.activeUpdatePromise;
+  }
   const pendingPayload = getPendingUpdate(storageKeys);
 
   if (!pendingPayload) {
@@ -564,23 +672,14 @@ export function createDraftSyncScheduler({
         highestCompletedStepIndex: snapshot.highestCompletedStepIndex,
       });
 
-      try {
-        setPendingUpdate(storageKeys, payload);
-
-        await postJson(
-          apiUrls.formUpdate,
-          payload,
-          config.timeouts.formUpdate
-        );
-
-        clearPendingUpdate(storageKeys);
-      } catch (error) {
-        console.error('[ZDK] Draft sync error:', error);
-
-        if (typeof onTrackingError === 'function') {
-          await onTrackingError(error);
-        }
-      }
+      await enqueueFormSessionProgressSync({
+        state,
+        config,
+        apiUrls,
+        storageKeys,
+        payload,
+        onTrackingError,
+      });
     }, config.tracking.debounceMs);
   };
 }
