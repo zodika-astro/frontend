@@ -28,6 +28,9 @@ export function createInitialFormState() {
     tracking: {
       isSyncingStep: false,
       draftSyncTimer: null,
+      isUpdateRequestInFlight: false,
+      activeUpdatePromise: null,
+      queuedProgressPayload: null,
     },
 
     session: {
@@ -81,6 +84,9 @@ export function resetFormState(state) {
   }
 
   state.tracking.draftSyncTimer = null;
+  state.tracking.isUpdateRequestInFlight = initial.tracking.isUpdateRequestInFlight;
+  state.tracking.activeUpdatePromise = initial.tracking.activeUpdatePromise;
+  state.tracking.queuedProgressPayload = initial.tracking.queuedProgressPayload;
 
   state.session.token = initial.session.token;
   state.session.isStarted = initial.session.isStarted;
