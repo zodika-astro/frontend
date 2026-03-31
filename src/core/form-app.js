@@ -544,6 +544,15 @@ export function createFormApp(productConfig) {
         return;
       }
 
+      openOverlay({ overlayElement: dom.spinnerOverlay, state });
+
+      const response = await submitCheckoutRequest({
+        form: dom.form,
+        state,
+        config,
+        apiUrls,
+      });
+
       if (state.session.token) {
         await markFormSessionSubmitted({
           state,
@@ -554,15 +563,6 @@ export function createFormApp(productConfig) {
           lastStepIndex: dom.steps.length - 1,
         });
       }
-
-      openOverlay({ overlayElement: dom.spinnerOverlay, state });
-
-      const response = await submitCheckoutRequest({
-        form: dom.form,
-        state,
-        config,
-        apiUrls,
-      });
 
       if (state.session.token && response?.request_id) {
         try {
