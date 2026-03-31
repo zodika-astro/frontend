@@ -15,7 +15,7 @@
  * Returns storage keys scoped by product.
  *
  * @param {object} config
- * @returns {{sessionToken: string, pendingUpdate: string}}
+ * @returns {{sessionToken: string, pendingUpdate: string, draftState: string}}
  */
 export function getStorageKeys(config) {
   const productKey = config?.productKey || 'default';
