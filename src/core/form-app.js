@@ -59,6 +59,7 @@ import {
   getStorageKeys,
   getSessionToken,
   getPendingUpdate,
+  getLastTrackingSuccessAt,
   clearAllFormStorage,
 } from './form-storage.js';
 import {
@@ -115,6 +116,17 @@ export function createFormApp(productConfig) {
 
   const placeHiddenFieldIds = getPlaceHiddenFieldIds(config);
 
+  function isLocallyExpiredSession() {
+    const token = getSessionToken(storageKeys);
+    const lastTrackingSuccessAt = getLastTrackingSuccessAt(storageKeys);
+
+    if (!token || !lastTrackingSuccessAt) return false;
+
+    const sessionInactivityWindowMs = 2 * 60 * 60 * 1000;
+
+    return Date.now() - lastTrackingSuccessAt > sessionInactivityWindowMs;
+  }
+  
   function ensureErrorContainersAreStyleControlled() {
     Object.values(config.errorIds || {}).forEach((errorId) => {
       const element = document.getElementById(errorId);
@@ -349,7 +361,13 @@ export function createFormApp(productConfig) {
    * Restore session
    * ---------------------------------------------------------------------- */
 
-  function restoreClientSession() {
+    function restoreClientSession() {
+    if (isLocallyExpiredSession()) {
+      clearAllFormStorage(storageKeys);
+      resetFormState(state);
+      return;
+    }
+
     const token = getSessionToken(storageKeys);
     const pending = getPendingUpdate(storageKeys);
 
@@ -529,6 +547,7 @@ export function createFormApp(productConfig) {
           state,
           config,
           apiUrls,
+          storageKeys,
           form: dom.form,
           lastStepIndex: dom.steps.length - 1,
         });
