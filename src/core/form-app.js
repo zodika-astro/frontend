@@ -85,6 +85,10 @@ import {
   formatDisplayDate,
   clamp,
 } from './form-utils.js';
+import {
+  persistDraftState,
+  restoreDraftState,
+} from './form-draft-state.js';
 
 /* ============================================================================
  * App factory
@@ -354,11 +358,27 @@ export function createFormApp(productConfig) {
       state.session.isStarted = true;
     }
 
+    const restoredDraftStepIndex = restoreDraftState({
+      storageKeys,
+      form: dom.form,
+      state,
+      config,
+      stepCount: dom.steps.length,
+      placeHiddenFieldIds,
+    });
+
+    if (restoredDraftStepIndex != null) {
+      state.ui.currentStepIndex = restoredDraftStepIndex;
+    }
+
     if (pending?.current_step_index != null) {
-      state.ui.currentStepIndex = clamp(
-        Number(pending.current_step_index),
-        0,
-        dom.steps.length - 1
+      state.ui.currentStepIndex = Math.min(
+        state.ui.currentStepIndex,
+        clamp(
+          Number(pending.current_step_index),
+          0,
+          dom.steps.length - 1
+        )
       );
     }
   }
@@ -406,6 +426,11 @@ export function createFormApp(productConfig) {
         }
 
         showStep({ dom, state, index: nextIndex });
+        persistDraftState({
+          storageKeys,
+          form: dom.form,
+          state,
+        });
         return;
       }
 
@@ -426,6 +451,11 @@ export function createFormApp(productConfig) {
       }
 
       showStep({ dom, state, index: nextIndex });
+      persistDraftState({
+          storageKeys,
+          form: dom.form,
+          state,
+        });
 
       if (state.session.token) {
         updateFormSessionProgress({
@@ -453,9 +483,16 @@ export function createFormApp(productConfig) {
     }
   }
 
-  async function prevStep() {
+   async function prevStep() {
     if (!canGoToPreviousStep(state)) return;
+
     showStep({ dom, state, index: getPreviousStepIndex(state) });
+
+    persistDraftState({
+      storageKeys,
+      form: dom.form,
+      state,
+    });
   }
 
   /* ------------------------------------------------------------------------
@@ -598,6 +635,22 @@ export function createFormApp(productConfig) {
       scheduleDraftSync,
     });
 
+      const persistDraftStateOnInteraction = (event) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (!dom.form.contains(target)) return;
+
+      persistDraftState({
+        storageKeys,
+        form: dom.form,
+        state,
+      });
+    };
+
+    dom.form.addEventListener('input', persistDraftStateOnInteraction);
+    dom.form.addEventListener('change', persistDraftStateOnInteraction);
+    dom.form.addEventListener('blur', persistDraftStateOnInteraction, true);
+    
     window.addEventListener('pagehide', () =>
       flushPendingUpdateWithKeepalive({ apiUrls, storageKeys })
     );
@@ -614,6 +667,11 @@ export function createFormApp(productConfig) {
     bindEvents();
     initAutocomplete();
     showStep({ dom, state, index: state.ui.currentStepIndex });
+    persistDraftState({
+      storageKeys,
+      form: dom.form,
+      state,
+    });
 
     if (state.ui.currentStepIndex === dom.steps.length - 1) {
       fillConfirmationSummary();
