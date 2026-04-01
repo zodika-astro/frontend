@@ -144,11 +144,15 @@ export function getEarliestSafeStepIndex({
   if (!hasBirthTime) return Math.min(requestedStepIndex, 3);
 
   const placeIdFieldName = config?.hiddenFields?.placeId;
+  const latFieldName = config?.hiddenFields?.lat;
+  const lngFieldName = config?.hiddenFields?.lng;
 
   const hasValidatedCity =
     Boolean(draftState?.city?.isValidated) &&
     Boolean(String(fields[config.fields.birthPlace] || '').trim()) &&
-    Boolean(String(fields[placeIdFieldName] || '').trim());
+    Boolean(String(fields[placeIdFieldName] || '').trim()) &&
+    Boolean(String(fields[latFieldName] || '').trim()) &&
+    Boolean(String(fields[lngFieldName] || '').trim());
 
   if (!hasValidatedCity) return Math.min(requestedStepIndex, 4);
 
@@ -183,8 +187,22 @@ export function restoreDraftState({
     fields: draftState.fields,
   });
 
-  state.city.isValidated = Boolean(draftState?.city?.isValidated);
-  state.city.selectedDisplay = String(draftState?.city?.selectedDisplay || '');
+  const placeIdFieldName = config?.hiddenFields?.placeId;
+  const latFieldName = config?.hiddenFields?.lat;
+  const lngFieldName = config?.hiddenFields?.lng;
+
+  const hasRestoredPlaceFields =
+    Boolean(String(draftState?.fields?.[placeIdFieldName] || '').trim()) &&
+    Boolean(String(draftState?.fields?.[latFieldName] || '').trim()) &&
+    Boolean(String(draftState?.fields?.[lngFieldName] || '').trim());
+
+  state.city.isValidated =
+    Boolean(draftState?.city?.isValidated) && hasRestoredPlaceFields;
+
+  state.city.selectedDisplay = state.city.isValidated
+    ? String(draftState?.city?.selectedDisplay || '')
+    : '';
+
   state.city.placePayload = null;
 
   if (!state.city.isValidated) {
