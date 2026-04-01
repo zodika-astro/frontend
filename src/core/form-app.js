@@ -163,6 +163,108 @@ export function createFormApp(productConfig) {
     clearElementValuesById(placeHiddenFieldIds);
   }
 
+    function getBackendErrorCode(error) {
+    return String(
+      error?.payload?.error?.code ||
+      error?.payload?.code ||
+      error?.code ||
+      ''
+    ).trim().toLowerCase();
+  }
+
+  function getCheckoutErrorPresentation(error) {
+    const code = getBackendErrorCode(error);
+
+    switch (code) {
+      case 'validation_error':
+      case 'validation_failed':
+      case 'invalid_argument':
+        return {
+          title: t('overlays.validationErrorTitle', 'revise seus dados'),
+          body: t(
+            'overlays.validationErrorBody',
+            'algumas informações precisam ser revisadas antes de continuar. confira os campos do formulário e tente novamente.'
+          ),
+        };
+
+      case 'privacy_consent_required':
+        return {
+          title: t('overlays.privacyErrorTitle', 'confirme sua autorização'),
+          body: t(
+            'overlays.privacyErrorBody',
+            'você precisa concordar com a política de privacidade para continuar.'
+          ),
+        };
+
+      case 'mp_create_preference_failed':
+      case 'pagbank_create_checkout_failed':
+        return {
+          title: t('overlays.paymentStartErrorTitle', 'não foi possível iniciar o pagamento'),
+          body: t(
+            'overlays.paymentStartErrorBody',
+            'houve um problema ao gerar sua página de pagamento. tente novamente em instantes.'
+          ),
+        };
+
+      case 'timeout':
+      case 'upstream_error':
+      case 'bad_gateway':
+      case 'service_unavailable':
+        return {
+          title: t('overlays.temporaryServiceErrorTitle', 'instabilidade temporária'),
+          body: t(
+            'overlays.temporaryServiceErrorBody',
+            'estamos com uma instabilidade temporária no serviço. tente novamente em alguns instantes.'
+          ),
+        };
+
+      case 'db_persist_failed':
+      case 'form_processing_failed':
+      case 'internal_error':
+        return {
+          title: t('overlays.processingErrorTitle', 'não foi possível concluir sua solicitação'),
+          body: t(
+            'overlays.processingErrorBody',
+            'não conseguimos concluir sua solicitação agora. tente novamente. se o problema continuar, entre em contato por e-mail.'
+          ),
+        };
+
+      default:
+        if (!navigator.onLine) {
+          return {
+            title: t('overlays.networkErrorTitle', 'você parece estar offline'),
+            body: t(
+              'overlays.networkErrorBody',
+              'verifique sua conexão com a internet e tente novamente.'
+            ),
+          };
+        }
+
+        return {
+          title: t('overlays.errorTitle', 'ops... algo deu errado.'),
+          body: t(
+            'overlays.errorBody',
+            'você quer tentar novamente? clique no botão abaixo ou envie um e-mail para: info@zodika.com.br'
+          ),
+        };
+    }
+  }
+
+  function applyErrorOverlayContent({ title, body }) {
+    if (!dom.errorOverlay) return;
+
+    const heading = dom.errorOverlay.querySelector('#error-overlay-title');
+    const paragraph = dom.errorOverlay.querySelector('#error-overlay-text');
+
+    if (heading && title) {
+      heading.textContent = title;
+    }
+
+    if (paragraph && body) {
+      paragraph.textContent = body;
+    }
+  }
+
   function fillConfirmationSummary() {
     if (!dom.confirmationSummary || !Array.isArray(config.confirmationFields)) return;
 
@@ -613,7 +715,7 @@ export function createFormApp(productConfig) {
       }
 
       redirectToCheckoutUrl(response.url);
-    } catch (error) {
+    }     } catch (error) {
       const handled = await onTrackingError(error);
 
       if (handled) {
@@ -621,12 +723,27 @@ export function createFormApp(productConfig) {
       }
 
       closeOverlay({ overlayElement: dom.spinnerOverlay, state });
-      openOverlay({ overlayElement: dom.errorOverlay, state });
 
-      const backendMessage = String(error?.message || '').toLowerCase();
-      if (backendMessage.includes('privacy')) {
-        showError(config.errorIds.privacy, error.message);
+      const errorCode = getBackendErrorCode(error);
+
+      if (errorCode === 'privacy_consent_required') {
+        showError(
+          config.errorIds.privacy,
+          t(
+            'errors.privacyRequired',
+            'você precisa concordar com a política de privacidade para continuar.'
+          )
+        );
       }
+
+      const presentation = getCheckoutErrorPresentation(error);
+
+      applyErrorOverlayContent({
+        title: presentation.title,
+        body: presentation.body,
+      });
+
+      openOverlay({ overlayElement: dom.errorOverlay, state });
     } finally {
       state.ui.isSubmitting = false;
     }
