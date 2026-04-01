@@ -66,6 +66,7 @@ function readMappedFieldValue(formDataObject, fieldName) {
  *
  * @param {HTMLFormElement} form
  * @param {object} state
+ * @param {object} config
  * @returns {object}
  */
 export function getCurrentFormPayload(form, state, config) {
