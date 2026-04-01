@@ -715,7 +715,7 @@ export function createFormApp(productConfig) {
       }
 
       redirectToCheckoutUrl(response.url);
-    }     } catch (error) {
+    } catch (error) {
       const handled = await onTrackingError(error);
 
       if (handled) {
