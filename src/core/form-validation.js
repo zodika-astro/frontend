@@ -180,9 +180,10 @@ function getNormalizedFieldValue(field) {
  *
  * @param {HTMLInputElement} input
  * @param {object} state
+ * @param {object} config
  * @returns {boolean}
  */
-function hasCoherentCitySelection(input, state) {
+function hasCoherentCitySelection(input, state, config) {
   const value = getNormalizedFieldValue(input);
 
   const placePayload = state?.city?.placePayload || null;
@@ -192,16 +193,31 @@ function hasCoherentCitySelection(input, state) {
     Number.isFinite(Number(placePayload?.lng));
 
   const form = input?.form || null;
-  const placeId = form?.elements?.namedItem?.('birth_place_place_id');
-  const lat = form?.elements?.namedItem?.('birth_place_lat');
-  const lng = form?.elements?.namedItem?.('birth_place_lng');
+
+  const placeIdFieldName = config?.hiddenFields?.placeId;
+  const latFieldName = config?.hiddenFields?.lat;
+  const lngFieldName = config?.hiddenFields?.lng;
+
+  const placeId = placeIdFieldName
+    ? form?.elements?.namedItem?.(placeIdFieldName)
+    : null;
+  const lat = latFieldName
+    ? form?.elements?.namedItem?.(latFieldName)
+    : null;
+  const lng = lngFieldName
+    ? form?.elements?.namedItem?.(lngFieldName)
+    : null;
 
   const hasHiddenFields =
     Boolean(String(placeId?.value || '').trim()) &&
     Boolean(String(lat?.value || '').trim()) &&
     Boolean(String(lng?.value || '').trim());
 
-  return Boolean(state?.city?.isValidated) && Boolean(value) && (hasPlacePayload || hasHiddenFields);
+  return (
+    Boolean(state?.city?.isValidated) &&
+    Boolean(value) &&
+    (hasPlacePayload || hasHiddenFields)
+  );
 }
 
 /**
@@ -409,7 +425,7 @@ export function validateTimeInput(input, config, t) {
  * @returns {boolean}
  */
 export function validateCityInput(input, state, config, t, rule = null) {
-  if (!hasCoherentCitySelection(input, state)) {
+  if (!hasCoherentCitySelection(input, state, config)) {
     return markFieldInvalid(
       input,
       config.errorIds.city,
