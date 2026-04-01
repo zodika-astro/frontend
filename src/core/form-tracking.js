@@ -681,18 +681,4 @@ export function bindDraftTrackingListeners({
 
     scheduleDraftSync();
   });
-
-  form.addEventListener(
-    'blur',
-    (event) => {
-      const target = event.target;
-      if (!(target instanceof HTMLElement)) return;
-      if (!('name' in target)) return;
-      if (!trackableFieldNames.has(target.name)) return;
-      if (!state?.session?.token) return;
-
-      scheduleDraftSync();
-    },
-    true
-  );
 }
