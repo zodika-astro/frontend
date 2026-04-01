@@ -3,21 +3,29 @@
 /* ============================================================================
  * ZODIKA • Form Storage
  * ----------------------------------------------------------------------------
- * sessionStorage helpers for form session and draft persistence.
+ * sessionStorage helpers for form session lifecycle and client-side persistence.
  *
  * Responsibilities
  * - Persist session token across page reloads
- * - Store pending tracking updates for retry
- * - Provide safe read/write wrappers
- * - Persists a lightweight client-side snapshot
- * - Persists lightweight tracking timestamps 
+ * - Store pending tracking updates for retry logic
+ * - Persist and restore draft form state
+ * - Track last successful tracking timestamp
+ * - Provide safe read/write wrappers with graceful failure handling
  * ========================================================================== */
 
 /**
  * Returns storage keys scoped by product.
  *
+ * Keys are namespaced using the productKey to ensure isolation between
+ * different product forms sharing the same domain.
+ *
  * @param {object} config
-  * @returns {{sessionToken: string, pendingUpdate: string, draftState: string, lastTrackingSuccessAt: string}}
+ * @returns {{
+ *   sessionToken: string,
+ *   pendingUpdate: string,
+ *   draftState: string,
+ *   lastTrackingSuccessAt: string
+ * }}
  */
 export function getStorageKeys(config) {
   const productKey = config?.productKey || 'default';
@@ -47,6 +55,8 @@ export function getSessionToken(storageKeys) {
 /**
  * Stores the session token in sessionStorage.
  *
+ * Only persists truthy tokens to avoid storing invalid values.
+ *
  * @param {object} storageKeys
  * @param {string|null} token
  */
@@ -72,6 +82,8 @@ export function clearSessionToken(storageKeys) {
 /**
  * Reads pending update payload from sessionStorage.
  *
+ * Used to retry tracking updates that failed previously.
+ *
  * @param {object} storageKeys
  * @returns {object|null}
  */
@@ -88,6 +100,8 @@ export function getPendingUpdate(storageKeys) {
 
 /**
  * Stores pending update payload in sessionStorage.
+ *
+ * Payload is serialized as JSON. No-op if payload is null/undefined.
  *
  * @param {object} storageKeys
  * @param {object|null} payload
@@ -113,8 +127,11 @@ export function clearPendingUpdate(storageKeys) {
     sessionStorage.removeItem(storageKeys.pendingUpdate);
   } catch {}
 }
+
 /**
  * Reads draft state from sessionStorage.
+ *
+ * Draft state represents a lightweight snapshot of form progress.
  *
  * @param {object} storageKeys
  * @returns {object|null}
@@ -132,6 +149,8 @@ export function getDraftState(storageKeys) {
 
 /**
  * Stores draft state in sessionStorage.
+ *
+ * Used for restoring form progress after reload or interruption.
  *
  * @param {object} storageKeys
  * @param {object|null} payload
@@ -159,7 +178,9 @@ export function clearDraftState(storageKeys) {
 }
 
 /**
- * Reads the last successful tracking timestamp from sessionStorage.
+ * Reads the timestamp of the last successful tracking update.
+ *
+ * Used to determine session freshness and inactivity windows.
  *
  * @param {object} storageKeys
  * @returns {number|null}
@@ -177,7 +198,7 @@ export function getLastTrackingSuccessAt(storageKeys) {
 }
 
 /**
- * Stores the last successful tracking timestamp in sessionStorage.
+ * Stores the timestamp of the last successful tracking update.
  *
  * @param {object} storageKeys
  * @param {number} timestamp
@@ -206,6 +227,8 @@ export function clearLastTrackingSuccessAt(storageKeys) {
 
 /**
  * Clears all form-related storage keys.
+ *
+ * Used when resetting the form lifecycle (e.g., new session, completion, or abandonment).
  *
  * @param {object} storageKeys
  */
