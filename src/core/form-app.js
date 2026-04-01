@@ -268,24 +268,22 @@ export function createFormApp(productConfig) {
       }
 
       const components = place.address_components || [];
-      const pick = (type) => {
+      const pickLongName = (type) => {
+        const component = components.find((item) => (item.types || []).includes(type));
+        return component ? (component.long_name || '') : '';
+      };
+
+      const pickShortName = (type) => {
         const component = components.find((item) => (item.types || []).includes(type));
         return component ? (component.short_name || component.long_name || '') : '';
       };
 
-      const countryRaw = pick('country');
-      const admin1 = pick('administrative_area_level_1');
-      const admin2 = pick('administrative_area_level_2');
+      const countryRaw = pickLongName('country');
+      const admin1 = pickShortName('administrative_area_level_1');
+      const admin2 = pickLongName('administrative_area_level_2');
       const name = place.name || admin2 || '';
 
-      const countryPretty =
-        countryRaw === 'Brazil' || countryRaw === 'Brasil'
-          ? 'Brasil'
-          : countryRaw === 'United States'
-            ? 'EUA'
-            : countryRaw;
-
-      const displayValue = [name, admin1, countryPretty].filter(Boolean).join(', ');
+      const displayValue = [name, admin1, countryRaw].filter(Boolean).join(', ');
       const lat = place.geometry.location.lat();
       const lng = place.geometry.location.lng();
 
