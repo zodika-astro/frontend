@@ -71,6 +71,9 @@ function isMobileViewport() {
 
 /**
  * Scrolls the page upward only when the active step starts above the current
+ * viewport.
+ *
+ * On mobile-sized viewports, use instant scroll to reduce keyboard/viewport jank.
  *
  * @param {HTMLElement|null} stepElement
  */
@@ -149,7 +152,7 @@ export function showStep({ dom, state, index, onAfterShowStep }) {
     stepElement.classList.toggle('active', isCurrent);
   });
 
-    requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
     const activeStep = dom.steps[boundedIndex];
     scrollPageForStepTransition(activeStep);
     focusFirstInteractive(activeStep);
@@ -161,6 +164,7 @@ export function showStep({ dom, state, index, onAfterShowStep }) {
   if (typeof onAfterShowStep === 'function') {
     onAfterShowStep(boundedIndex);
   }
+}
 
 /**
  * Checks if the user can advance to the next step.
