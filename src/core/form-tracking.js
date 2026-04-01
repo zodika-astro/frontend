@@ -28,7 +28,6 @@ import {
 } from './form-navigation.js';
 
 import {
-  getSessionToken,
   setSessionToken,
   clearSessionToken,
   getPendingUpdate,
@@ -37,94 +36,6 @@ import {
   setLastTrackingSuccessAt,
   clearLastTrackingSuccessAt,
 } from './form-storage.js';
-
-/**
- * Returns a storage-key reference object for the current product.
- *
- * @param {object} config
- * @returns {{sessionToken: string, pendingUpdate: string}}
- */
-export function getTrackingStorageKeys(config) {
-  const productKey = config?.productKey || 'default';
-
-  return {
-    sessionToken: `zdk_${productKey}_session_token`,
-    pendingUpdate: `zdk_${productKey}_pending_update`,
-  };
-}
-
-/**
- * Returns the subset of API URLs used by the tracking layer.
- *
- * @param {object} apiUrls
- * @returns {object}
- */
-export function getTrackingApiUrls(apiUrls) {
-  return {
-    formStart: apiUrls.formStart,
-    formUpdate: apiUrls.formUpdate,
-    formSubmit: apiUrls.formSubmit,
-    formLinkRequest: apiUrls.formLinkRequest,
-  };
-}
-
-/**
- * Reads the stored session token from sessionStorage.
- *
- * @param {object} storageKeys
- * @returns {string|null}
- */
-export function getStoredSessionToken(storageKeys) {
-  return getSessionToken(storageKeys);
-}
-
-/**
- * Stores the session token in sessionStorage.
- *
- * @param {object} storageKeys
- * @param {string|null} token
- */
-export function storeSessionToken(storageKeys, token) {
-  setSessionToken(storageKeys, token);
-}
-
-/**
- * Clears the session token from sessionStorage.
- *
- * @param {object} storageKeys
- */
-export function clearStoredSessionToken(storageKeys) {
-  clearSessionToken(storageKeys);
-}
-
-/**
- * Reads the pending update payload from sessionStorage.
- *
- * @param {object} storageKeys
- * @returns {object|null}
- */
-export function getPendingUpdatePayload(storageKeys) {
-  return getPendingUpdate(storageKeys);
-}
-
-/**
- * Stores the pending update payload in sessionStorage.
- *
- * @param {object} storageKeys
- * @param {object|null} payload
- */
-export function storePendingUpdatePayload(storageKeys, payload) {
-  setPendingUpdate(storageKeys, payload);
-}
-
-/**
- * Clears the pending update payload from sessionStorage.
- *
- * @param {object} storageKeys
- */
-export function clearPendingUpdatePayload(storageKeys) {
-  clearPendingUpdate(storageKeys);
-}
 
 /**
  * Returns the tracking field map from product config.
