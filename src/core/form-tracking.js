@@ -470,6 +470,19 @@ export function flushPendingUpdateWithKeepalive({
   const pendingPayload = getPendingUpdate(storageKeys);
   if (!pendingPayload) return;
 
+  const body = JSON.stringify(pendingPayload);
+
+  try {
+    if (typeof navigator !== 'undefined' && typeof navigator.sendBeacon === 'function') {
+      const blob = new Blob([body], { type: 'application/json' });
+      const sent = navigator.sendBeacon(apiUrls.formUpdate, blob);
+
+      if (sent) {
+        return;
+      }
+    }
+  } catch {}
+
   try {
     fetch(apiUrls.formUpdate, {
       method: 'POST',
@@ -477,7 +490,7 @@ export function flushPendingUpdateWithKeepalive({
         'Content-Type': 'application/json',
         Accept: 'application/json',
       },
-      body: JSON.stringify(pendingPayload),
+      body,
       keepalive: true,
     }).catch(() => {});
   } catch {}
