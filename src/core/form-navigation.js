@@ -110,6 +110,22 @@ function updateProgressUI(dom, state) {
 }
 
 /**
+ * Updates the accessible progress status text.
+ *
+ * @param {object} dom
+ * @param {object} state
+ */
+function updateProgressStatusText(dom, state) {
+  const statusElement = document.getElementById('progressStatus');
+  if (!statusElement || !dom?.steps?.length || !state?.ui) return;
+
+  const currentStepNumber = Number(state.ui.currentStepIndex || 0) + 1;
+  const totalSteps = dom.steps.length;
+
+  statusElement.textContent = `Etapa ${currentStepNumber} de ${totalSteps}`;
+}
+
+/**
  * Shows a specific step.
  *
  * @param {object} params
@@ -140,11 +156,11 @@ export function showStep({ dom, state, index, onAfterShowStep }) {
   });
 
   updateProgressUI(dom, state);
+  updateProgressStatusText(dom, state);
 
   if (typeof onAfterShowStep === 'function') {
     onAfterShowStep(boundedIndex);
   }
-}
 
 /**
  * Checks if the user can advance to the next step.
