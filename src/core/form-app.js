@@ -230,6 +230,11 @@ export function createFormApp(productConfig) {
     closeOverlay({ overlayElement: dom.errorOverlay, state });
 
     showStep({ dom, state, index: 0 });
+    persistDraftState({
+      storageKeys,
+      form: dom.form,
+      state,
+    });
   }
 
   function initAutocomplete() {
@@ -367,6 +372,9 @@ export function createFormApp(productConfig) {
     if (isLocallyExpiredSession()) {
       clearAllFormStorage(storageKeys);
       resetFormState(state);
+      clearAllErrors(config);
+      clearAllInvalidStates(dom.form);
+      clearElementValuesById(placeHiddenFieldIds);
       return;
     }
 
@@ -392,13 +400,15 @@ export function createFormApp(productConfig) {
     }
 
     if (pending?.current_step_index != null) {
+      const pendingStepIndex = clamp(
+        Number(pending.current_step_index),
+        0,
+        dom.steps.length - 1
+      );
+
       state.ui.currentStepIndex = Math.min(
         state.ui.currentStepIndex,
-        clamp(
-          Number(pending.current_step_index),
-          0,
-          dom.steps.length - 1
-        )
+        pendingStepIndex
       );
     }
   }
@@ -740,8 +750,9 @@ export function createFormApp(productConfig) {
       state,
     });
 
-    if (state.ui.currentStepIndex === dom.steps.length - 1) {
+     if (state.ui.currentStepIndex === dom.steps.length - 1) {
       fillConfirmationSummary();
+      validateCityInput(dom.cityInput, state, config, t);
     }
   }
 
