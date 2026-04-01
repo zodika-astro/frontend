@@ -426,21 +426,22 @@ export function createFormApp(productConfig) {
           loadingTimer = window.setTimeout(() => {
             setCurrentNextButtonLoading(true);
           }, 180);
-        
-        await startFormSession({
-          state,
-          config,
-          apiUrls,
-          storageKeys,
-          form: dom.form,
-        });
+
+          await startFormSession({
+            state,
+            config,
+            apiUrls,
+            storageKeys,
+            form: dom.form,
+          });
         } finally {
           if (loadingTimer) {
             window.clearTimeout(loadingTimer);
           }
+
           setCurrentNextButtonLoading(false);
-          }
-        
+        }
+
         if (nextIndex === dom.steps.length - 1) {
           fillConfirmationSummary();
         }
@@ -451,6 +452,20 @@ export function createFormApp(productConfig) {
           form: dom.form,
           state,
         });
+
+        if (state.session.token) {
+          updateFormSessionProgress({
+            state,
+            config,
+            apiUrls,
+            storageKeys,
+            form: dom.form,
+            targetStepIndex: nextIndex,
+            previousStepIndex,
+            onTrackingError,
+          });
+        }
+
         return;
       }
 
