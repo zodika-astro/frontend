@@ -143,10 +143,12 @@ export function getEarliestSafeStepIndex({
   const hasBirthTime = Boolean(String(fields[config.fields.birthTime] || '').trim());
   if (!hasBirthTime) return Math.min(requestedStepIndex, 3);
 
+  const placeIdFieldName = config?.hiddenFields?.placeId;
+
   const hasValidatedCity =
     Boolean(draftState?.city?.isValidated) &&
     Boolean(String(fields[config.fields.birthPlace] || '').trim()) &&
-    Boolean(String(fields.birth_place_place_id || '').trim());
+    Boolean(String(fields[placeIdFieldName] || '').trim());
 
   if (!hasValidatedCity) return Math.min(requestedStepIndex, 4);
 
